@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="112" fill="#000"/>
+  <circle cx="256" cy="256" r="176" fill="url(#votelyt-icon-g)"/>
+  <circle cx="198" cy="178" r="136" fill="url(#votelyt-icon-crescent)"/>
+  <defs>
+    <radialGradient id="votelyt-icon-g" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(326 326) rotate(-135) scale(252)">
+      <stop stop-color="#7DC4FF"/>
+      <stop offset="0.46" stop-color="#4A9EFF"/>
+      <stop offset="1" stop-color="#1A5FBF"/>
+    </radialGradient>
+    <radialGradient id="votelyt-icon-crescent" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(128 108) rotate(45) scale(222)">
+      <stop stop-color="#000000"/>
+      <stop offset="0.62" stop-color="#000000"/>
+      <stop offset="1" stop-color="#1A5FBF"/>
+    </radialGradient>
+  </defs>
+</svg>

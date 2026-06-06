@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ElectionStatus {
+  DRAFT
+  ACTIVE
+  ENDED
+}
+
+enum ElectionTemplate {
+  GENERIC
+  SCHOOL
+}
+
+enum AuthMode {
+  ACCESS_CODE
+  TWO_FIELDS
+}
+
+enum Role {
+  USER
+  SUPERADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  elections    Election[]
+
+  @@map("users")
+}
+
+model Election {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  template    ElectionTemplate @default(GENERIC)
+  status      ElectionStatus   @default(DRAFT)
+  authMode    AuthMode         @default(ACCESS_CODE)
+  authFields  Json             @default("[]")
+  // Optional definitions of custom candidate fields (stored per candidate in
+  // Candidate.metadata). Shape: [{ fieldName, fieldLabel, isRequired }].
+  candidateFields Json         @default("[]")
+  allowAbstain Boolean         @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Tenant owner. Every election belongs to exactly one user.
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  voterFields VoterFieldDef[]
+  positions   Position[]
+  voters      Voter[]
+  candidates  Candidate[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("elections")
+}
+
+model VoterFieldDef {
+  id           String   @id @default(cuid())
+  electionId   String
+  election     Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  fieldName    String
+  fieldLabel   String
+  isIdentifier Boolean  @default(false)
+  isRequired   Boolean  @default(true)
+  sortOrder    Int      @default(0)
+
+  @@index([electionId])
+  @@map("voter_field_defs")
+}
+
+model Position {
+  id           String   @id @default(cuid())
+  electionId   String
+  election     Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  maxWinners   Int      @default(1)
+  maxVotes     Int      @default(1)
+  restrictions Json     @default("{}")
+  sortOrder    Int      @default(0)
+
+  candidates Candidate[]
+  votes      Vote[]
+
+  @@index([electionId])
+  @@map("positions")
+}
+
+model Voter {
+  id         String    @id @default(cuid())
+  electionId String
+  election   Election  @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  metadata   Json      @default("{}")
+  tokenHash  String?
+  // Deterministic fingerprint (sha256) of the access token for O(1) lookup at
+  // vote time; bcrypt `tokenHash` still does the final verification.
+  tokenLookup String?
+  hasVoted   Boolean   @default(false)
+  votedAt    DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([electionId])
+  @@index([electionId, hasVoted])
+  // Guarantees no two voters in the same election share an access-code
+  // fingerprint, and also serves as the O(1) lookup index for vote-time auth.
+  // tokenLookup is NULL for two-field voters; Postgres permits multiple NULLs,
+  // so this only constrains real access codes.
+  @@unique([electionId, tokenLookup])
+  @@map("voters")
+}
+
+model Candidate {
+  id          String   @id @default(cuid())
+  electionId  String
+  election    Election @relation(fields: [electionId], references: [id], onDelete: Cascade)
+  positionId  String
+  position    Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  photoUrl    String?
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+
+  votes Vote[]
+
+  @@index([electionId])
+  @@index([positionId])
+  @@map("candidates")
+}
+
+model Vote {
+  id          String    @id @default(cuid())
+  electionId  String
+  positionId  String
+  position    Position  @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  candidateId String
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@index([electionId])
+  @@index([positionId])
+  @@index([candidateId])
+  @@map("votes")
+}
