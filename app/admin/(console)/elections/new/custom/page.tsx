@@ -157,7 +157,7 @@ function BuilderInner() {
   const isReview = step === STEPS.length - 1;
 
   return (
-    <div className="mx-auto max-w-3xl px-8 py-24 md:py-28">
+    <div className="mx-auto max-w-3xl px-5 py-16 md:px-8 md:py-28">
       <motion.div initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ duration: 0.6 }}>
         <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/35 mb-5">
           Console · create{tpl ? ` · ${tpl.name}` : " · custom"}
@@ -220,15 +220,15 @@ function BuilderInner() {
                 <div className="space-y-2">
                   {fields.map((f, i) => (
                     <div key={i} className="glass rounded-xl p-4 grid grid-cols-12 items-end gap-3">
-                      <div className="col-span-4">
+                      <div className="col-span-12 sm:col-span-4">
                         <label className="mono-label mb-1 block">Key</label>
                         <input value={f.fieldName} onChange={(e) => updateField(i, "fieldName", key(e.target.value))} placeholder="roll_no" className="field-glass text-sm" />
                       </div>
-                      <div className="col-span-5">
+                      <div className="col-span-8 sm:col-span-5">
                         <label className="mono-label mb-1 block">Label</label>
                         <input value={f.fieldLabel} onChange={(e) => updateField(i, "fieldLabel", e.target.value)} placeholder="Roll Number" className="field-glass text-sm" />
                       </div>
-                      <div className="col-span-2 pb-2">
+                      <div className="col-span-3 sm:col-span-2 pb-2">
                         <button type="button" onClick={() => updateField(i, "isRequired", !f.isRequired)} className="font-mono text-[0.58rem] uppercase tracking-[0.14em]" style={{ color: f.isRequired ? "#89AACC" : "rgba(255,255,255,0.3)" }}>
                           {f.isRequired ? "● Required" : "Optional"}
                         </button>
@@ -290,10 +290,10 @@ function BuilderInner() {
                   {positions.map((p, i) => (
                     <div key={i} className="glass rounded-xl p-5 space-y-4">
                       <div className="grid grid-cols-12 items-end gap-3">
-                        <div className="col-span-6"><label className="mono-label mb-1 block">Title</label><input value={p.title} onChange={(e) => updatePosition(i, "title", e.target.value)} placeholder="President" className="field-glass text-sm" /></div>
-                        <div className="col-span-2"><LabelTip label="Votes" tip="Max candidates one voter may select for this seat. Use 1 for a single choice, or a higher number to let each voter pick several." /><input type="number" min={1} value={p.maxVotes} onChange={(e) => updatePosition(i, "maxVotes", parseInt(e.target.value) || 1)} className="field-glass text-sm text-center" /></div>
-                        <div className="col-span-2"><LabelTip label="Winners" tip="How many candidates get elected — the top N by vote count when polls close." /><input type="number" min={1} value={p.maxWinners} onChange={(e) => updatePosition(i, "maxWinners", parseInt(e.target.value) || 1)} className="field-glass text-sm text-center" /></div>
-                        <div className="col-span-2 flex justify-end pb-2"><button type="button" onClick={() => removePosition(i)} disabled={positions.length === 1} className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-white/40 hover:text-destructive disabled:opacity-30">Remove</button></div>
+                        <div className="col-span-12 sm:col-span-6"><label className="mono-label mb-1 block">Title</label><input value={p.title} onChange={(e) => updatePosition(i, "title", e.target.value)} placeholder="President" className="field-glass text-sm" /></div>
+                        <div className="col-span-4 sm:col-span-2"><LabelTip label="Votes" tip="Max candidates one voter may select for this seat. Use 1 for a single choice, or a higher number to let each voter pick several." /><input type="number" min={1} value={p.maxVotes} onChange={(e) => updatePosition(i, "maxVotes", parseInt(e.target.value) || 1)} className="field-glass text-sm text-center" /></div>
+                        <div className="col-span-4 sm:col-span-2"><LabelTip label="Winners" tip="How many candidates get elected — the top N by vote count when polls close." /><input type="number" min={1} value={p.maxWinners} onChange={(e) => updatePosition(i, "maxWinners", parseInt(e.target.value) || 1)} className="field-glass text-sm text-center" /></div>
+                        <div className="col-span-4 sm:col-span-2 flex justify-end pb-2"><button type="button" onClick={() => removePosition(i)} disabled={positions.length === 1} className="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-white/40 hover:text-destructive disabled:opacity-30">Remove</button></div>
                       </div>
                       <div>
                         <div className="mb-2 flex items-center justify-between">
@@ -322,9 +322,9 @@ function BuilderInner() {
                 <div className="space-y-2">
                   {candFields.map((c, i) => (
                     <div key={i} className="glass rounded-xl p-4 grid grid-cols-12 items-end gap-3">
-                      <div className="col-span-4"><label className="mono-label mb-1 block">Key</label><input value={c.fieldName} onChange={(e) => updateCand(i, "fieldName", key(e.target.value))} placeholder="manifesto" className="field-glass text-sm" /></div>
-                      <div className="col-span-5"><label className="mono-label mb-1 block">Label</label><input value={c.fieldLabel} onChange={(e) => updateCand(i, "fieldLabel", e.target.value)} placeholder="Manifesto" className="field-glass text-sm" /></div>
-                      <div className="col-span-2 pb-2"><button type="button" onClick={() => updateCand(i, "isRequired", !c.isRequired)} className="font-mono text-[0.58rem] uppercase tracking-[0.14em]" style={{ color: c.isRequired ? "#89AACC" : "rgba(255,255,255,0.3)" }}>{c.isRequired ? "● Required" : "Optional"}</button></div>
+                      <div className="col-span-12 sm:col-span-4"><label className="mono-label mb-1 block">Key</label><input value={c.fieldName} onChange={(e) => updateCand(i, "fieldName", key(e.target.value))} placeholder="manifesto" className="field-glass text-sm" /></div>
+                      <div className="col-span-8 sm:col-span-5"><label className="mono-label mb-1 block">Label</label><input value={c.fieldLabel} onChange={(e) => updateCand(i, "fieldLabel", e.target.value)} placeholder="Manifesto" className="field-glass text-sm" /></div>
+                      <div className="col-span-3 sm:col-span-2 pb-2"><button type="button" onClick={() => updateCand(i, "isRequired", !c.isRequired)} className="font-mono text-[0.58rem] uppercase tracking-[0.14em]" style={{ color: c.isRequired ? "#89AACC" : "rgba(255,255,255,0.3)" }}>{c.isRequired ? "● Required" : "Optional"}</button></div>
                       <div className="col-span-1 flex justify-end pb-2"><button type="button" onClick={() => removeCand(i)} className="text-white/40 hover:text-destructive"><X size={13} /></button></div>
                     </div>
                   ))}

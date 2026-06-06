@@ -7,7 +7,7 @@ import { InteractiveHeading } from "@/components/ui/InteractiveHeading";
 
 export default function TemplatesPage() {
   return (
-    <div className="mx-auto max-w-6xl px-8 py-24 md:py-28">
+    <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-28">
       <motion.div initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ duration: 0.6 }}>
         <Link href="/admin/elections/new" className="mb-6 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/35 hover:text-white transition-colors">
           <ArrowLeft size={13} /> Back

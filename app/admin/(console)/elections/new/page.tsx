@@ -25,7 +25,7 @@ const cards = [
 
 export default function NewElectionEntry() {
   return (
-    <div className="mx-auto max-w-5xl px-8 py-24 md:py-28">
+    <div className="mx-auto max-w-5xl px-5 py-16 md:px-8 md:py-28">
       <motion.div
         initial={{ opacity: 0, filter: "blur(6px)" }}
         animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -54,7 +54,7 @@ export default function NewElectionEntry() {
           >
             <Link
               href={c.href}
-              className="group relative block h-full overflow-hidden rounded-3xl glass p-9 card-lift"
+              className="group relative block h-full overflow-hidden rounded-3xl glass p-6 md:p-9 card-lift"
             >
               <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#4A9EFF]/[0.07] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="mb-8 flex items-center justify-between">

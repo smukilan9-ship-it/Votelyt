@@ -33,7 +33,7 @@ const FEATURES = [
   {
     icon: Users,
     title: "Any Election",
-    body: "Student councils, house captains, faculty boards. Configure positions, voter lists, and sign-in in minutes.",
+    body: "Student councils, house captains, faculty boards. Configure positions, voter lists, and sign-in — all in minutes.",
   },
 ];
 
@@ -262,7 +262,7 @@ export function LandingHero() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           SECTION 2 — WHAT IS VOTELYT (scroll reveal)
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section ref={featuresRef} className="relative bg-[#000] py-32 px-8 md:px-16 lg:px-24 overflow-hidden">
+      <section ref={featuresRef} className="relative bg-[#000] py-20 px-5 md:py-32 md:px-16 lg:px-24 overflow-hidden">
         {/* subtle dot grid bg */}
         <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
 
@@ -280,8 +280,8 @@ export function LandingHero() {
             <span className="accent-gradient-text">built for everyone.</span>
           </h2>
 
-          <p className="scroll-reveal text-[1.15rem] text-white/55 max-w-2xl leading-relaxed mb-20">
-            Votelyt is a modern voting platform for organisations. Whether you&apos;re running a student council election or a faculty vote, Votelyt handles everything — from voter sign-in to sealed results — with privacy kept front of mind.
+          <p className="scroll-reveal text-[1.05rem] md:text-[1.15rem] text-white/55 max-w-2xl leading-relaxed mb-12 md:mb-20">
+            Votelyt is a modern voting platform for organisations. Whether you&apos;re running a student council election or a faculty vote, Votelyt handles everything — from voter sign-in to sealed results — with privacy built in at every step.
           </p>
 
           {/* Feature grid */}
@@ -289,7 +289,7 @@ export function LandingHero() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="feat-card group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] p-8 transition-all duration-500 hover:border-[#4A9EFF]/30 hover:bg-white/[0.04]">
+                <div key={f.title} className="feat-card group relative rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 md:p-8 transition-all duration-500 hover:border-[#4A9EFF]/30 hover:bg-white/[0.04]">
                   {/* hover glow */}
                   <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                     style={{ background: "radial-gradient(ellipse at top left, rgba(74,158,255,0.06) 0%, transparent 65%)" }} />
@@ -310,9 +310,9 @@ export function LandingHero() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           SECTION 3 — STATS BAR
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="relative border-y border-white/[0.06] py-20 px-8 md:px-16 lg:px-24 overflow-hidden">
+      <section className="relative border-y border-white/[0.06] py-16 px-5 md:py-20 md:px-16 lg:px-24 overflow-hidden">
         <div className="absolute inset-0 accent-gradient opacity-[0.03] pointer-events-none" />
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10">
           {STATS.map((s) => (
             <div key={s.label} className="stat-item text-center">
               <p className="font-bold accent-gradient-text mb-2 tracking-tight"
@@ -328,10 +328,10 @@ export function LandingHero() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           SECTION 4 — HOW IT WORKS
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-32 px-8 md:px-16 lg:px-24 relative overflow-hidden">
+      <section className="py-20 px-5 md:py-32 md:px-16 lg:px-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="scroll-reveal mb-6"><span className="label">How it works</span></div>
-          <h2 className="scroll-reveal font-bold text-white leading-tight tracking-tight mb-20"
+          <h2 className="scroll-reveal font-bold text-white leading-tight tracking-tight mb-12 md:mb-20"
             style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}>
             Three steps to
             <br /><span className="accent-gradient-text">a fair result.</span>
@@ -343,7 +343,7 @@ export function LandingHero() {
               { n: "02", title: "Vote", body: "Voters sign in once and cast a private ballot. Each access code can be used only once." },
               { n: "03", title: "Reveal", body: "Close the election to unseal results. A live podium with animated vote tallies." },
             ].map((step) => (
-              <div key={step.n} className="feat-card bg-[#000] p-10 group hover:bg-white/[0.02] transition-colors duration-300">
+              <div key={step.n} className="feat-card bg-[#000] p-8 md:p-10 group hover:bg-white/[0.02] transition-colors duration-300">
                 <p className="font-mono text-[0.7rem] tracking-[0.2em] text-[#4A9EFF] mb-6">{step.n}</p>
                 <h3 className="text-[1.6rem] font-bold text-white mb-4 tracking-tight">{step.title}</h3>
                 <p className="text-[0.95rem] text-white/50 leading-relaxed">{step.body}</p>
@@ -356,7 +356,7 @@ export function LandingHero() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
           SECTION 5 — CTA
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="py-32 px-8 md:px-16 relative overflow-hidden">
+      <section className="py-20 px-5 md:py-32 md:px-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#4A9EFF]/[0.03] to-transparent pointer-events-none" />
         <div className="max-w-3xl mx-auto text-center">
           <p className="scroll-reveal label mb-6 justify-center flex">Ready to start</p>
@@ -366,7 +366,7 @@ export function LandingHero() {
             <br /><span className="accent-gradient-text">your rules.</span>
           </h2>
           <p className="scroll-reveal text-[1.1rem] text-white/50 mb-12 max-w-xl mx-auto leading-relaxed">
-            Create your first election in under two minutes. No setup fees, no complexity — just a clean, auditable vote.
+            Create your first election in under two minutes. No setup fees, no complexity — just a clean, private vote.
           </p>
           <motion.div className="scroll-reveal flex items-center justify-center gap-4 flex-wrap">
             <Link href="/admin"

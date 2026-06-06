@@ -31,10 +31,10 @@ export default async function AdminDashboard() {
   const turnout = totalVoters > 0 ? Math.round((totalVoted / totalVoters) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-24 md:py-32">
+    <div className="mx-auto max-w-5xl px-5 py-16 md:px-8 md:py-32">
 
       {/* ── Header ─────────────────────────────────────────── */}
-      <header className="mb-20 flex items-end justify-between anim-slide-up" style={{ animationDelay: "0ms" }}>
+      <header className="mb-12 flex items-end justify-between anim-slide-up md:mb-20" style={{ animationDelay: "0ms" }}>
         <div>
           <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/30 mb-5">
             Console · Overview
@@ -55,7 +55,7 @@ export default async function AdminDashboard() {
       </header>
 
       {/* ── Stat cards ─────────────────────────────────────── */}
-      <div className="mb-24 grid grid-cols-2 gap-5 md:grid-cols-4">
+      <div className="mb-16 grid grid-cols-2 gap-4 sm:gap-5 md:mb-24 md:grid-cols-4">
         {[
           { label: "Elections", value: elections.length },
           { label: "Live now", value: activeCount, accent: activeCount > 0 },
@@ -84,7 +84,7 @@ export default async function AdminDashboard() {
         </div>
 
         {elections.length === 0 ? (
-          <div className="rounded-3xl glass py-32 text-center">
+          <div className="rounded-3xl glass py-20 px-5 text-center md:py-32">
             <p className="text-xl font-medium text-white/30 mb-6">No elections yet.</p>
             <Link
               href="/admin/elections/new"
@@ -104,7 +104,7 @@ export default async function AdminDashboard() {
                 <Link
                   key={el.id}
                   href={`/admin/elections/${el.id}`}
-                  className="group flex items-center gap-6 border-b border-white/[0.05] last:border-b-0 px-8 py-6 hover:bg-white/[0.04] transition-all duration-300 anim-slide-up"
+                  className="group flex items-center gap-4 border-b border-white/[0.05] last:border-b-0 px-5 py-5 hover:bg-white/[0.04] transition-all duration-300 anim-slide-up md:gap-6 md:px-8 md:py-6"
                   style={{ animationDelay: `${500 + i * 60}ms` }}
                 >
                   {/* index */}
@@ -172,7 +172,7 @@ function StatCard({
   label, value, suffix = "", accent = false, ring = false,
 }: { label: string; value: number; suffix?: string; accent?: boolean; ring?: boolean }) {
   return (
-    <div className="relative rounded-3xl glass px-8 py-10 overflow-hidden group card-lift">
+    <div className="relative rounded-3xl glass px-6 py-8 overflow-hidden group card-lift md:px-8 md:py-10">
       {accent && (
         <div className="absolute inset-0 bg-gradient-to-br from-[#4A9EFF]/[0.08] to-transparent rounded-3xl" />
       )}

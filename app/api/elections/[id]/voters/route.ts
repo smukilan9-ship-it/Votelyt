@@ -157,3 +157,23 @@ export async function POST(
 
   return NextResponse.json({ voter, ...(token ? { token } : {}) }, { status: 201 });
 }
+
+// Clear the entire voter roll for the election. Only permitted while the
+// election is in DRAFT (setup); once it has opened, the roll is frozen.
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const gate = await authorizeElection(id);
+  if (!gate.ok) return NextResponse.json({ error: gate.status === 404 ? "Not found" : "Unauthorized" }, { status: gate.status });
+
+  const election = await prisma.election.findUnique({ where: { id }, select: { status: true } });
+  if (!election) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (election.status !== "DRAFT") {
+    return NextResponse.json({ error: "The voter roll cannot be cleared after the election has opened." }, { status: 409 });
+  }
+
+  const { count } = await prisma.voter.deleteMany({ where: { electionId: id } });
+  return NextResponse.json({ cleared: count });
+}

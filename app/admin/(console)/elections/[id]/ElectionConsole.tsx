@@ -216,7 +216,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
   ];
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-20">
+    <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8 sm:py-20">
 
       <div>
         {/* back */}
@@ -229,7 +229,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 flex flex-wrap items-end justify-between gap-8 pb-10 border-b border-white/[0.08]"
+          className="mt-10 flex flex-wrap items-end justify-between gap-6 pb-8 sm:gap-8 sm:pb-10 border-b border-white/[0.08]"
         >
           <div className="min-w-0">
             <div className="mb-4 flex items-center gap-4">
@@ -262,12 +262,12 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
         </motion.div>
 
         {/* tabs */}
-        <div className="mt-10 mb-12 flex gap-2">
+        <div className="mt-10 mb-12 -mx-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:px-0">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`relative px-5 py-3 rounded-xl font-sans font-medium text-sm tracking-wide transition-all duration-200 ${
+              className={`relative shrink-0 px-5 py-3 rounded-xl font-sans font-medium text-sm tracking-wide transition-all duration-200 ${
                 activeTab === t.id
                   ? "bg-white/[0.1] text-white"
                   : "text-white/40 hover:text-white/70 hover:bg-white/[0.05]"
@@ -300,7 +300,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   {/* Configuration */}
-                  <div className="glass rounded-2xl p-8">
+                  <div className="glass rounded-2xl p-6 sm:p-8">
                     <h3 className="font-sans font-semibold text-lg text-white mb-6">Configuration</h3>
                     <InfoRow label="Template" value={election.template} />
                     <InfoRow label="Positions" value={String(election.positions.length)} />
@@ -331,7 +331,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                   </div>
 
                   {/* Election ID (voting access) */}
-                  <div className="glass rounded-2xl p-8">
+                  <div className="glass rounded-2xl p-6 sm:p-8">
                     <h3 className="font-sans font-semibold text-lg text-white mb-6">Voter access</h3>
                     {/* Big Election ID */}
                     <div className="mb-4 rounded-xl bg-white/[0.04] border border-white/[0.06] px-5 py-4">
@@ -473,11 +473,11 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
             {activeTab === "voters" && (
               <div className="space-y-10">
                 <section className="glass rounded-2xl overflow-hidden">
-                  <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.07]">
+                  <div className="flex items-center justify-between px-5 py-5 sm:px-8 sm:py-6 border-b border-white/[0.07]">
                     <h3 className="font-sans font-semibold text-lg text-white">Import voters</h3>
                     <span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/30">CSV · XLSX</span>
                   </div>
-                  <div className="p-8">
+                  <div className="p-5 sm:p-8">
                     <p className="mb-3 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/30">Required columns</p>
                     <div className="mb-6 flex flex-wrap gap-2">
                       {election.voterFields.map((f) => (
@@ -531,7 +531,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                     )}
                   </div>
                 </section>
-                <VoterList electionId={election.id} fields={election.voterFields} authMode={election.authMode} electionTitle={election.title} />
+                <VoterList electionId={election.id} fields={election.voterFields} authMode={election.authMode} electionTitle={election.title} status={election.status} onChanged={refetch} />
               </div>
             )}
 
@@ -625,7 +625,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function VoterList({ electionId, fields, authMode, electionTitle }: { electionId: string; fields: { fieldName: string; fieldLabel: string }[]; authMode: string; electionTitle: string }) {
+function VoterList({ electionId, fields, authMode, electionTitle, status, onChanged }: { electionId: string; fields: { fieldName: string; fieldLabel: string }[]; authMode: string; electionTitle: string; status: string; onChanged: () => void }) {
   const [voters, setVoters] = useState<{ id: string; metadata: Record<string, string>; hasVoted: boolean }[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
@@ -633,8 +633,12 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
   const [newCodes, setNewCodes] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null); // voterId | "bulk"
   const [bulkConfirm, setBulkConfirm] = useState(false);
+  const [removeConfirm, setRemoveConfirm] = useState<string | null>(null); // voterId pending removal
+  const [clearConfirm, setClearConfirm] = useState(false);
   const { toast } = useToast();
   const isAccessCode = authMode === "ACCESS_CODE";
+  // The roll is editable only during setup; once the election opens it's frozen.
+  const editable = status === "DRAFT";
 
   const load = async () => {
     setLoading(true);
@@ -681,9 +685,42 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
     downloadCsv(`${electionTitle}-regenerated-codes.csv`, rows);
   };
 
+  const removeVoter = async (voterId: string) => {
+    setRemoveConfirm(null);
+    setBusy(voterId);
+    try {
+      const res = await fetch(`/api/elections/${electionId}/voters/${voterId}`, { method: "DELETE" });
+      if (res.ok) {
+        setVoters((vs) => (vs ? vs.filter((v) => v.id !== voterId) : vs));
+        toast("Voter removed", "success");
+        onChanged();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast(data.error ?? "Could not remove voter", "error");
+      }
+    } catch { toast("Could not remove voter", "error"); }
+    finally { setBusy(null); }
+  };
+
+  const clearRoll = async () => {
+    setClearConfirm(false);
+    setBusy("bulk");
+    try {
+      const res = await fetch(`/api/elections/${electionId}/voters`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setVoters([]);
+        setNewCodes({});
+        toast(`Cleared ${data.cleared} voter${data.cleared === 1 ? "" : "s"}`, "success");
+        onChanged();
+      } else toast(data.error ?? "Could not clear voter roll", "error");
+    } catch { toast("Could not clear voter roll", "error"); }
+    finally { setBusy(null); }
+  };
+
   if (!voters) {
     return (
-      <section className="glass rounded-2xl flex items-center justify-between px-8 py-7">
+      <section className="glass rounded-2xl flex flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8 sm:py-7">
         <div>
           <h3 className="font-sans font-semibold text-lg text-white">Voter roll</h3>
           <p className="mt-2 text-sm text-white/30">Hidden by default for privacy.</p>
@@ -701,7 +738,7 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
 
   return (
     <section className="glass rounded-2xl overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-4 px-8 py-6 border-b border-white/[0.07]">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8 sm:py-6 border-b border-white/[0.07]">
         <div className="flex items-center gap-6">
           <h3 className="font-sans font-semibold text-lg text-white">
             Voter roll
@@ -730,12 +767,33 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
               </span>
             )
           )}
+          {editable && (
+            !clearConfirm ? (
+              <Button size="sm" variant="secondary" onClick={() => setClearConfirm(true)} disabled={busy !== null || voters.length === 0}>
+                Clear voter roll
+              </Button>
+            ) : (
+              <span className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.14em]">
+                <span className="text-red-400">Remove all {voters.length} voters?</span>
+                <button onClick={clearRoll} className="text-red-400 underline">Yes, clear</button>
+                <button onClick={() => setClearConfirm(false)} className="text-white/40 hover:text-white">No</button>
+              </span>
+            )
+          )}
           <Button size="sm" variant="secondary" onClick={load} loading={loading}>Refresh</Button>
         </div>
       </div>
 
+      {!editable && (
+        <div className="border-b border-white/[0.07] bg-white/[0.02] px-5 py-3 sm:px-8">
+          <p className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-white/35">
+            The voter roll is locked — voters cannot be removed after the election has opened.
+          </p>
+        </div>
+      )}
+
       {isAccessCode && regeneratedCount > 0 && (
-        <div className="flex items-center justify-between border-b border-white/[0.07] bg-[#4A9EFF]/[0.06] px-8 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[#4A9EFF]/[0.06] px-5 py-3 sm:px-8">
           <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#4A9EFF]">
             {regeneratedCount} new code{regeneratedCount > 1 ? "s" : ""} — shown once, download to distribute
           </p>
@@ -754,6 +812,7 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
               ))}
               <th className="px-6 py-3 text-left font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Status</th>
               {isAccessCode && <th className="px-6 py-3 text-right font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Access code</th>}
+              {editable && <th className="px-6 py-3 text-right font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Remove</th>}
             </tr>
           </thead>
           <tbody>
@@ -789,6 +848,24 @@ function VoterList({ electionId, fields, authMode, electionTitle }: { electionId
                         className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/35 hover:text-[#4A9EFF] disabled:opacity-40 transition-colors"
                       >
                         {busy === v.id ? "…" : "Regenerate"}
+                      </button>
+                    )}
+                  </td>
+                )}
+                {editable && (
+                  <td className="px-6 py-3 text-right whitespace-nowrap">
+                    {removeConfirm === v.id ? (
+                      <span className="inline-flex items-center gap-2 font-mono text-[0.55rem] uppercase tracking-[0.16em]">
+                        <button onClick={() => removeVoter(v.id)} className="text-red-400 underline">Remove</button>
+                        <button onClick={() => setRemoveConfirm(null)} className="text-white/40 hover:text-white">Cancel</button>
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setRemoveConfirm(v.id)}
+                        disabled={busy !== null}
+                        className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/35 hover:text-red-400 disabled:opacity-40 transition-colors"
+                      >
+                        {busy === v.id ? "…" : "Remove"}
                       </button>
                     )}
                   </td>
