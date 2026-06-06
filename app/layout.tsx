@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Cursor } from "@/components/ui/Cursor";
 import { Preloader } from "@/components/ui/Preloader";
+import { Analytics } from "@vercel/analytics/next";
 
 const serif = Instrument_Serif({
   subsets: ["latin"],
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Cursor />
         <Preloader />
         <ToastProvider>{children}</ToastProvider>
+        <Analytics />
       </body>
     </html>
   );
