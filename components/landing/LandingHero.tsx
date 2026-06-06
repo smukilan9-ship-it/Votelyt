@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BrandName, VotelytLogo } from "@/components/ui/Brand";
 import { HlsVideo } from "@/components/ui/HlsVideo";
-import { ArrowDown, Shield, BarChart3, Users, Lock } from "lucide-react";
+import { ArrowDown, Shield, BarChart3, Users, Lock, Github } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -390,10 +390,10 @@ export function LandingHero() {
           <span>Votelyt</span>
           <span>© {new Date().getFullYear()}</span>
         </div>
-        <div className="mt-4 px-8 md:px-16 text-center font-sans text-[1.15rem] md:text-[1.5rem] font-semibold tracking-tight text-white/60">
-          Designed and developed by{" "}
-          <Link href="https://github.com/smukilan9-ship-it" target="_blank" rel="noopener noreferrer" className="text-[#4A9EFF] hover:text-[#7DC4FF] transition-colors">
-            Mukilan
+        <div className="mt-4 px-8 md:px-16 flex justify-center">
+          <Link href="https://github.com/smukilan9-ship-it" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-[0.78rem] md:text-[0.88rem] font-medium tracking-wide text-white/45 hover:text-[#7DC4FF] transition-colors">
+            <Github size={15} strokeWidth={1.8} aria-hidden="true" />
+            <span>Mukilan Senthilkumar</span>
           </Link>
         </div>
       </footer>
