@@ -54,6 +54,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
   const [election, setElection] = useState(initial);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   const [addCandidateOpen, setAddCandidateOpen] = useState(false);
@@ -246,18 +247,10 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
           </div>
           <div className="flex flex-col items-end gap-5">
             <PhaseController status={election.status} busy={statusLoading} onAdvance={changeStatus} />
-            {!deleteConfirm ? (
-              <button onClick={() => setDeleteConfirm(true)}
-                className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-white/25 transition-colors hover:text-red-400">
-                Delete election
-              </button>
-            ) : (
-              <span className="flex items-center gap-3 font-mono text-[0.62rem] uppercase tracking-[0.2em]">
-                <span className="text-red-400">Delete permanently?</span>
-                <button onClick={handleDelete} disabled={deleting} className="text-red-400 underline">{deleting ? "Deleting…" : "Yes"}</button>
-                <button onClick={() => setDeleteConfirm(false)} className="text-white/40 hover:text-white">No</button>
-              </span>
-            )}
+            <button onClick={() => { setDeleteText(""); setDeleteConfirm(true); }}
+              className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-red-400">
+              Delete election
+            </button>
           </div>
         </motion.div>
 
@@ -612,6 +605,46 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
           </div>
         </div>
       </Modal>
+
+      {/* delete election — irreversible, so require typing the title to confirm */}
+      <Modal
+        open={deleteConfirm}
+        onClose={() => { if (!deleting) setDeleteConfirm(false); }}
+        title="Delete this election?"
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteConfirm(false)} disabled={deleting}>Cancel</Button>
+            <Button
+              variant="danger"
+              onClick={handleDelete}
+              loading={deleting}
+              disabled={deleteText.trim() !== election.title.trim()}
+            >
+              Delete permanently
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-sm leading-relaxed text-white/75">
+            This permanently deletes{" "}
+            <span className="font-semibold text-white">{election.title}</span>{" "}
+            along with all of its positions, candidates, voters, access codes and any ballots cast. This action cannot be undone.
+          </p>
+          <div>
+            <label className="mono-label mb-2 block">Type the election name to confirm</label>
+            <input
+              value={deleteText}
+              onChange={(e) => setDeleteText(e.target.value)}
+              placeholder={election.title}
+              className="field-glass text-sm"
+              autoFocus
+              aria-label="Type the election name to confirm deletion"
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -660,7 +693,6 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
   };
 
   const regenerateAll = async () => {
-    setBulkConfirm(false);
     setBusy("bulk");
     try {
       const res = await fetch(`/api/elections/${electionId}/voters/regenerate`, { method: "POST" });
@@ -672,7 +704,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         toast(`Regenerated ${data.regenerated} codes`, "success");
       } else toast(data.error ?? "Bulk regeneration failed", "error");
     } catch { toast("Bulk regeneration failed", "error"); }
-    finally { setBusy(null); }
+    finally { setBusy(null); setBulkConfirm(false); }
   };
 
   const downloadNewCodes = () => {
@@ -686,7 +718,6 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
   };
 
   const removeVoter = async (voterId: string) => {
-    setRemoveConfirm(null);
     setBusy(voterId);
     try {
       const res = await fetch(`/api/elections/${electionId}/voters/${voterId}`, { method: "DELETE" });
@@ -699,11 +730,10 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         toast(data.error ?? "Could not remove voter", "error");
       }
     } catch { toast("Could not remove voter", "error"); }
-    finally { setBusy(null); }
+    finally { setBusy(null); setRemoveConfirm(null); }
   };
 
   const clearRoll = async () => {
-    setClearConfirm(false);
     setBusy("bulk");
     try {
       const res = await fetch(`/api/elections/${electionId}/voters`, { method: "DELETE" });
@@ -715,7 +745,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         onChanged();
       } else toast(data.error ?? "Could not clear voter roll", "error");
     } catch { toast("Could not clear voter roll", "error"); }
-    finally { setBusy(null); }
+    finally { setBusy(null); setClearConfirm(false); }
   };
 
   if (!voters) {
@@ -723,7 +753,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
       <section className="glass rounded-2xl flex flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8 sm:py-7">
         <div>
           <h3 className="font-sans font-semibold text-lg text-white">Voter roll</h3>
-          <p className="mt-2 text-sm text-white/30">Hidden by default for privacy.</p>
+          <p className="mt-2 text-sm text-white/60">Hidden by default for privacy.</p>
         </div>
         <Button size="sm" variant="secondary" onClick={load} loading={loading}>Load roll</Button>
       </section>
@@ -735,8 +765,13 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
     ? voters.filter((v) => Object.values(v.metadata).some((val) => String(val).toLowerCase().includes(query.toLowerCase())))
     : voters;
   const regeneratedCount = Object.keys(newCodes).length;
+  const removingVoter = removeConfirm ? voters.find((v) => v.id === removeConfirm) ?? null : null;
+  const removingLabel = removingVoter
+    ? (fields.map((f) => removingVoter.metadata[f.fieldName]).find(Boolean) ?? "this voter")
+    : "this voter";
 
   return (
+    <>
     <section className="glass rounded-2xl overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8 sm:py-6 border-b border-white/[0.07]">
         <div className="flex items-center gap-6">
@@ -755,30 +790,14 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
             className="field-glass w-40 !py-1.5 text-[0.7rem] uppercase tracking-[0.12em]"
           />
           {isAccessCode && (
-            !bulkConfirm ? (
-              <Button size="sm" variant="secondary" onClick={() => setBulkConfirm(true)} disabled={busy !== null || voters.length === 0}>
-                Regenerate all codes
-              </Button>
-            ) : (
-              <span className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.14em]">
-                <span className="text-white/50">Replace every code?</span>
-                <button onClick={regenerateAll} className="text-[#4A9EFF] underline">Yes</button>
-                <button onClick={() => setBulkConfirm(false)} className="text-white/40 hover:text-white">No</button>
-              </span>
-            )
+            <Button size="sm" variant="secondary" onClick={() => setBulkConfirm(true)} disabled={busy !== null || voters.length === 0}>
+              Regenerate all codes
+            </Button>
           )}
           {editable && (
-            !clearConfirm ? (
-              <Button size="sm" variant="secondary" onClick={() => setClearConfirm(true)} disabled={busy !== null || voters.length === 0}>
-                Clear voter roll
-              </Button>
-            ) : (
-              <span className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.14em]">
-                <span className="text-red-400">Remove all {voters.length} voters?</span>
-                <button onClick={clearRoll} className="text-red-400 underline">Yes, clear</button>
-                <button onClick={() => setClearConfirm(false)} className="text-white/40 hover:text-white">No</button>
-              </span>
-            )
+            <Button size="sm" variant="secondary" onClick={() => setClearConfirm(true)} disabled={busy !== null || voters.length === 0}>
+              Clear voter roll
+            </Button>
           )}
           <Button size="sm" variant="secondary" onClick={load} loading={loading}>Refresh</Button>
         </div>
@@ -854,20 +873,13 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
                 )}
                 {editable && (
                   <td className="px-6 py-3 text-right whitespace-nowrap">
-                    {removeConfirm === v.id ? (
-                      <span className="inline-flex items-center gap-2 font-mono text-[0.55rem] uppercase tracking-[0.16em]">
-                        <button onClick={() => removeVoter(v.id)} className="text-red-400 underline">Remove</button>
-                        <button onClick={() => setRemoveConfirm(null)} className="text-white/40 hover:text-white">Cancel</button>
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => setRemoveConfirm(v.id)}
-                        disabled={busy !== null}
-                        className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/35 hover:text-red-400 disabled:opacity-40 transition-colors"
-                      >
-                        {busy === v.id ? "…" : "Remove"}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setRemoveConfirm(v.id)}
+                      disabled={busy !== null}
+                      className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/55 hover:text-red-400 disabled:opacity-40 transition-colors"
+                    >
+                      {busy === v.id ? "…" : "Remove"}
+                    </button>
                   </td>
                 )}
               </tr>
@@ -876,5 +888,68 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         </table>
       </div>
     </section>
+
+    {/* regenerate every access code */}
+    <Modal
+      open={bulkConfirm}
+      onClose={() => setBulkConfirm(false)}
+      title="Regenerate all access codes?"
+      size="sm"
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => setBulkConfirm(false)} disabled={busy === "bulk"}>Cancel</Button>
+          <Button variant="primary" onClick={regenerateAll} loading={busy === "bulk"}>Regenerate all</Button>
+        </>
+      }
+    >
+      <p className="text-sm leading-relaxed text-white/75">
+        This issues a brand-new code for every one of the{" "}
+        <span className="font-semibold text-white">{voters.length}</span> voters on this roll.
+        Any codes you have already shared will <span className="font-semibold text-white">stop working</span> immediately.
+        The new codes are shown once here — download them afterwards to redistribute.
+      </p>
+    </Modal>
+
+    {/* clear the entire voter roll */}
+    <Modal
+      open={clearConfirm}
+      onClose={() => setClearConfirm(false)}
+      title="Clear the voter roll?"
+      size="sm"
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => setClearConfirm(false)} disabled={busy === "bulk"}>Cancel</Button>
+          <Button variant="danger" onClick={clearRoll} loading={busy === "bulk"}>Yes, clear roll</Button>
+        </>
+      }
+    >
+      <p className="text-sm leading-relaxed text-white/75">
+        This removes all{" "}
+        <span className="font-semibold text-white">{voters.length}</span>{" "}
+        voters and their access codes from this election. This cannot be undone — you would need to re-import the list.
+        The roll can only be cleared while the election is still in setup.
+      </p>
+    </Modal>
+
+    {/* remove a single voter */}
+    <Modal
+      open={removeConfirm !== null}
+      onClose={() => setRemoveConfirm(null)}
+      title="Remove this voter?"
+      size="sm"
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => setRemoveConfirm(null)} disabled={busy !== null}>Cancel</Button>
+          <Button variant="danger" onClick={() => removeConfirm && removeVoter(removeConfirm)} loading={busy !== null && busy === removeConfirm}>Remove voter</Button>
+        </>
+      }
+    >
+      <p className="text-sm leading-relaxed text-white/75">
+        This removes{" "}
+        <span className="font-semibold text-white">{removingLabel}</span>{" "}
+        from the voter roll along with their access code. This cannot be undone.
+      </p>
+    </Modal>
+    </>
   );
 }

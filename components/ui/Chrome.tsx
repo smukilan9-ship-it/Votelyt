@@ -53,7 +53,7 @@ export function Footer({ id, status }: { id?: string; status?: string }) {
         </div>
       </div>
       <div className="border-t border-white/[0.04] px-6 py-3">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between font-sans text-[0.6rem] font-medium uppercase tracking-[0.14em] text-white/40">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between font-sans text-[0.6rem] font-medium uppercase tracking-[0.14em] text-white/60">
           <span>{id ? `Election ${id}` : "Votelyt"}</span>
           {status && (
             <span className="flex items-center gap-2">

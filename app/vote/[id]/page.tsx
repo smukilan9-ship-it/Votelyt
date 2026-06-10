@@ -223,7 +223,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
     return (
       <Shell title="Election Software">
         <div className="grid min-h-[70vh] place-items-center">
-          <span className="font-sans font-medium text-[0.65rem] tracking-[0.3em] text-white/30 animate-pulse">LOADING</span>
+          <span className="font-sans font-medium text-[0.65rem] tracking-[0.3em] text-white/55 animate-pulse">LOADING</span>
         </div>
       </Shell>
     );
@@ -349,7 +349,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
             >
-              <p className="font-sans font-medium text-[0.65rem] uppercase tracking-[0.2em] text-white/30">
+              <p className="font-sans font-medium text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
                 Next voter in {countdown}s
               </p>
               {/* countdown ring */}
@@ -536,7 +536,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.07 }}
                   >
-                    <span className="font-sans font-medium text-[0.7rem] text-white/25">{pad2(i)}</span>
+                    <span className="font-sans font-medium text-[0.7rem] text-white/45">{pad2(i)}</span>
                     <div>
                       <p className="sans-label mb-2">{c.title}</p>
                       {chosen.length ? (
@@ -546,9 +546,9 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                       ) : config.allowAbstain === false && c.candidates.length > 0 ? (
                         <p className="font-sans italic text-[1.2rem] text-[#FF9F6C]">— selection required</p>
                       ) : c.candidates.length === 0 ? (
-                        <p className="font-sans italic text-[1.2rem] text-white/25">— no candidates</p>
+                        <p className="font-sans italic text-[1.2rem] text-white/55">— no candidates</p>
                       ) : (
-                        <p className="font-sans italic text-[1.2rem] text-white/25">— abstained</p>
+                        <p className="font-sans italic text-[1.2rem] text-white/55">— abstained</p>
                       )}
                     </div>
                   </motion.div>
@@ -642,7 +642,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
               );
             })}
           </div>
-          <span className="hidden shrink-0 font-sans font-medium text-[0.65rem] uppercase tracking-[0.2em] text-white/30 md:inline">
+          <span className="hidden shrink-0 font-sans font-medium text-[0.65rem] uppercase tracking-[0.2em] text-white/55 md:inline">
             {selectedHere.length}/{contest.maxVotes} selected
           </span>
         </div>
@@ -678,7 +678,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                   <p className="mt-3 max-w-xl text-sm text-white/40">{contest.description}</p>
                 )}
               </div>
-              <span className="hidden font-sans font-medium text-[0.7rem] tracking-[0.2em] text-white/30 md:block">
+              <span className="hidden font-sans font-medium text-[0.7rem] tracking-[0.2em] text-white/55 md:block">
                 {contest.maxVotes > 1 ? `CHOOSE UP TO ${contest.maxVotes}` : "CHOOSE ONE"}
               </span>
             </motion.div>
@@ -701,7 +701,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
               ))}
               {contest.candidates.length === 0 && (
                 <div className="sm:col-span-2 lg:col-span-3 py-10">
-                  <p className="font-sans font-medium text-[0.7rem] uppercase tracking-[0.2em] text-white/25">No candidates listed.</p>
+                  <p className="font-sans font-medium text-[0.7rem] uppercase tracking-[0.2em] text-white/55">No candidates listed.</p>
                 </div>
               )}
             </div>
@@ -715,19 +715,19 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
           <button
             disabled={current === 0}
             onClick={() => setCurrent((i) => Math.max(0, i - 1))}
-            className="font-sans font-medium text-[0.68rem] uppercase tracking-[0.2em] text-white/30 transition-colors hover:text-white disabled:opacity-20"
+            className="font-sans font-medium text-[0.68rem] uppercase tracking-[0.2em] text-white/55 transition-colors hover:text-white disabled:opacity-20"
           >
             ⟵ Prev
           </button>
           {config.allowAbstain ? (
             <button
               onClick={abstainAll}
-              className="font-sans font-medium text-[0.62rem] uppercase tracking-[0.18em] text-white/25 transition-colors hover:text-white"
+              className="font-sans font-medium text-[0.62rem] uppercase tracking-[0.18em] text-white/55 transition-colors hover:text-white"
             >
               Abstain from election
             </button>
           ) : (
-            <span className="font-sans font-medium text-[0.62rem] uppercase tracking-[0.18em] text-white/20">
+            <span className="font-sans font-medium text-[0.62rem] uppercase tracking-[0.18em] text-white/55">
               {contest.candidates.length === 0 ? "No candidates in this contest" : selectedHere.length ? "Selection recorded" : "Selection required"}
             </span>
           )}

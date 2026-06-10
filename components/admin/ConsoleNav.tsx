@@ -26,7 +26,7 @@ export function ConsoleNav() {
         <Link href="/admin" className="glass rounded-full flex items-center gap-3 px-4 py-2.5 shrink-0">
           <VotelytLogo size={22} />
           <BrandName className="font-sans font-semibold text-[1rem] text-white" />
-          <span className="hidden md:inline font-mono text-[0.58rem] uppercase tracking-[0.18em] text-white/30 ml-1">Console</span>
+          <span className="hidden md:inline font-mono text-[0.58rem] uppercase tracking-[0.18em] text-white/55 ml-1">Console</span>
         </Link>
 
         {/* Desktop nav */}
@@ -34,12 +34,12 @@ export function ConsoleNav() {
           <div className="glass rounded-full flex items-center gap-5 px-5 py-2.5">
             {nav.map((n) => (
               <Link key={n.href} href={n.href} className="text-[0.8rem] font-medium tracking-wide transition-colors duration-200"
-                style={{ color: isActive(n.href, n.exact) ? "#fff" : "rgba(255,255,255,0.4)" }}>
+                style={{ color: isActive(n.href, n.exact) ? "#fff" : "rgba(255,255,255,0.62)" }}>
                 {n.label}
               </Link>
             ))}
             <div className="h-3 w-px bg-white/[0.1]" />
-            <button onClick={logout} className="text-[0.78rem] font-medium text-white/35 hover:text-red-400 transition-colors duration-200">
+            <button onClick={logout} className="text-[0.78rem] font-medium text-white/60 hover:text-red-400 transition-colors duration-200">
               Sign out
             </button>
           </div>

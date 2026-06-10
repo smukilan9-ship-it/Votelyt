@@ -36,7 +36,7 @@ export default async function AdminDashboard() {
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex items-end justify-between anim-slide-up md:mb-20" style={{ animationDelay: "0ms" }}>
         <div>
-          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/30 mb-5">
+          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/55 mb-5">
             Console · Overview
           </p>
           <h1
@@ -73,7 +73,7 @@ export default async function AdminDashboard() {
         <div className="mb-8 flex items-center justify-between">
           <h2 className="font-sans font-semibold text-xl text-white/70">
             All elections
-            <span className="ml-3 font-mono text-sm text-white/25">{pad2(elections.length)}</span>
+            <span className="ml-3 font-mono text-sm text-white/50">{pad2(elections.length)}</span>
           </h2>
           <Link
             href="/admin/elections/new"
@@ -85,7 +85,7 @@ export default async function AdminDashboard() {
 
         {elections.length === 0 ? (
           <div className="rounded-3xl glass py-20 px-5 text-center md:py-32">
-            <p className="text-xl font-medium text-white/30 mb-6">No elections yet.</p>
+            <p className="text-xl font-medium text-white/60 mb-6">No elections yet.</p>
             <Link
               href="/admin/elections/new"
               className="inline-flex items-center gap-2 rounded-full accent-gradient px-8 py-4 text-[0.9rem] font-semibold text-white hover:opacity-90 transition-opacity"
@@ -118,7 +118,7 @@ export default async function AdminDashboard() {
                     <p className="text-[1.15rem] font-semibold text-white truncate group-hover:text-[#4A9EFF] transition-colors duration-200">
                       {el.title}
                     </p>
-                    <p className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-white/30">
+                    <p className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-white/55">
                       {el._count.positions} positions · {el._count.candidates} candidates · {el._count.voters} voters
                     </p>
                   </div>
@@ -129,8 +129,8 @@ export default async function AdminDashboard() {
                       live
                         ? "bg-[#4A9EFF]/10 text-[#4A9EFF] border border-[#4A9EFF]/20"
                         : ended
-                        ? "bg-white/[0.04] text-white/25 border border-white/[0.05]"
-                        : "bg-white/[0.03] text-white/20 border border-white/[0.04]"
+                        ? "bg-white/[0.04] text-white/55 border border-white/[0.08]"
+                        : "bg-white/[0.03] text-white/55 border border-white/[0.06]"
                     }`}
                   >
                     {live && <span className="h-1.5 w-1.5 rounded-full bg-[#4A9EFF] animate-pulse" />}
@@ -149,11 +149,11 @@ export default async function AdminDashboard() {
                           strokeLinecap="round"
                         />
                       </svg>
-                      <span className="absolute inset-0 flex items-center justify-center font-mono text-[0.48rem] text-white/40">{pct}%</span>
+                      <span className="absolute inset-0 flex items-center justify-center font-mono text-[0.48rem] text-white/65">{pct}%</span>
                     </div>
                   </div>
 
-                  <span className="shrink-0 font-mono text-[0.62rem] tracking-[0.1em] text-white/25 hidden md:inline">
+                  <span className="shrink-0 font-mono text-[0.62rem] tracking-[0.1em] text-white/50 hidden md:inline">
                     {new Date(el.createdAt).toLocaleDateString("en-CA")}
                   </span>
 
@@ -179,7 +179,7 @@ function StatCard({
       {accent && (
         <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-[#4A9EFF]/50 to-transparent" />
       )}
-      <p className="font-sans text-[0.8rem] font-medium text-white/40 mb-5 relative">{label}</p>
+      <p className="font-sans text-[0.8rem] font-medium text-white/60 mb-5 relative">{label}</p>
       <div className="relative flex items-center gap-4">
         {ring && (
           <svg className="-rotate-90 shrink-0" viewBox="0 0 48 48" width="54" height="54">

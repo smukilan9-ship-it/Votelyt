@@ -15,7 +15,10 @@
   --border-2:  rgba(255,255,255,0.14);
   --text:      #ffffff;
   --text-2:    rgba(255,255,255,0.72);
-  --muted:     rgba(255,255,255,0.38);
+  /* Raised from 0.38 → 0.6 for WCAG AA. `--muted` backs the .label/.mono-label/
+     .sans-label classes and many functional captions, so it must clear ~4.5:1
+     on black. Purely-decorative low-opacity text uses inline /20–/30 instead. */
+  --muted:     rgba(255,255,255,0.6);
   --blue:      #4A9EFF;
   --blue-mid:  #2B7FE0;
   --blue-deep: #1A5FBF;
@@ -352,15 +355,6 @@ body {
   100% { transform: translateY(120px) rotate(720deg); opacity: 0; }
 }
 
-/* ── Cursor enhancements ──────────────────────────────────── */
-body.has-cursor { cursor: none; }
-body.has-cursor a,
-body.has-cursor button,
-body.has-cursor [role="button"],
-body.has-cursor input,
-body.has-cursor select,
-body.has-cursor label { cursor: none; }
-
 /* ── Card hover lift ──────────────────────────────────────── */
 .card-lift {
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
@@ -371,7 +365,6 @@ body.has-cursor label { cursor: none; }
 }
 
 /* ── Misc helpers ────────────────────────────────────────── */
-.no-native-cursor { cursor: none; }
 .tabular { font-feature-settings: "tnum" 1; }
 
 /* ── Focus ring (visible, premium, consistent) ───────────── */
@@ -379,6 +372,32 @@ body.has-cursor label { cursor: none; }
   outline: none;
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--blue), 0 0 18px rgba(74,158,255,0.45);
   border-radius: 12px;
+}
+
+/* Global keyboard focus. Applies a visible ring to every interactive element
+   that doesn't already opt into .focus-ring / .btn (those keep their own).
+   Mouse clicks don't trigger :focus-visible, so this is keyboard-only and
+   never shows during normal pointer use. */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  /* Inputs already paint their own focus border/shadow; keep the offset ring
+     subtle there so it doesn't double up awkwardly. */
+  .field-glass:focus-visible,
+  .field-underline:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+  }
 }
 
 /* ── Premium buttons ─────────────────────────────────────── */

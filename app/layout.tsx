@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, DM_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
-import { Cursor } from "@/components/ui/Cursor";
-import { Preloader } from "@/components/ui/Preloader";
 
 const serif = Instrument_Serif({
   subsets: ["latin"],
@@ -57,8 +55,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`h-full antialiased ${serif.variable} ${sans.variable} ${mono.variable}`}
     >
       <body className="min-h-full bg-[#000] font-sans text-white">
-        <Cursor />
-        <Preloader />
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
