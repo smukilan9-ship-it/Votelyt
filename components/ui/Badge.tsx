@@ -27,9 +27,9 @@ export function Badge({ children, variant = "default", dot = false }: BadgeProps
 
 export function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; variant: BadgeProps["variant"]; dot: boolean }> = {
-    DRAFT: { label: "Setup", variant: "default", dot: false },
-    ACTIVE: { label: "Live", variant: "success", dot: true },
-    ENDED: { label: "Closed", variant: "info", dot: false },
+    DRAFT: { label: "Draft", variant: "default", dot: false },
+    ACTIVE: { label: "Open", variant: "success", dot: true },
+    ENDED: { label: "Close", variant: "info", dot: false },
   };
   const cfg = map[status] ?? { label: status, variant: "default" as const, dot: false };
   return (

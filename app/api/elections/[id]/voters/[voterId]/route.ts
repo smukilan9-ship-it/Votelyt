@@ -6,7 +6,7 @@ import { requireSetupMutableElection, writeAuditLog } from "@/lib/electionIntegr
 export const runtime = "nodejs";
 
 // Remove a single voter from the roll. Only permitted while the election is in
-// DRAFT (setup); once it has opened, the roll is frozen so turnout and access
+// DRAFT; once it has opened, the roll is frozen so turnout and access
 // codes stay consistent for the duration of the vote.
 export async function DELETE(
   _req: NextRequest,

@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Prisma, type ElectionStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { prisma } from "./prisma";
@@ -12,7 +13,7 @@ export interface ElectionIntegrityState {
 }
 
 export const SETUP_LOCKED_MESSAGE =
-  "Election setup is locked after polls open. Only monitoring and ending the election are allowed.";
+  "Election draft configuration is locked after polls open. Only monitoring and ending the election are allowed.";
 
 export function isSetupMutable(election: ElectionIntegrityState): boolean {
   return election.status === "DRAFT" && election.activatedAt === null;
@@ -27,14 +28,12 @@ export async function writeAuditLog(
     metadata?: Prisma.InputJsonValue;
   }
 ) {
-  await db.auditLog.create({
-    data: {
-      action: input.action,
-      userId: input.userId,
-      electionId: input.electionId,
-      ...(input.metadata === undefined ? {} : { metadata: input.metadata }),
-    },
-  });
+  const metadata = input.metadata === undefined ? null : JSON.stringify(input.metadata);
+
+  await db.$executeRaw`
+    INSERT INTO "audit_logs" ("id", "action", "userId", "electionId", "metadata")
+    VALUES (${randomUUID()}, ${input.action}, ${input.userId}, ${input.electionId}, ${metadata}::jsonb)
+  `;
 }
 
 export async function blockedSetupMutationResponse(

@@ -3,9 +3,9 @@ import Link from "next/link";
 import { VotelytLogo } from "@/components/ui/Brand";
 
 const phaseLabel: Record<string, string> = {
-  DRAFT: "SETUP",
-  ACTIVE: "LIVE",
-  ENDED: "CLOSED",
+  DRAFT: "DRAFT",
+  ACTIVE: "OPEN",
+  ENDED: "CLOSE",
 };
 
 export function TopBar({ name, status, href = "/" }: { name: string; status?: string; href?: string }) {

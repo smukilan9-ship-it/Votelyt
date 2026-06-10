@@ -2,12 +2,9 @@
 import { useRef, useState } from "react";
 
 const PHASES = [
-  // `key` is the achieved-state label shown on the tile; `action` is the verb
-  // form shown when the tile is the next step you hold to advance to ("Close"
-  // the action vs. "Closed" the resulting status).
-  { key: "SETUP", status: "DRAFT", action: "SETUP", verb: "open polls" },
+  { key: "DRAFT", status: "DRAFT", action: "DRAFT", verb: "open polls" },
   { key: "OPEN", status: "ACTIVE", action: "OPEN", verb: "close polls" },
-  { key: "CLOSED", status: "ENDED", action: "CLOSE", verb: "" },
+  { key: "CLOSE", status: "ENDED", action: "CLOSE", verb: "" },
 ] as const;
 
 export function PhaseController({
@@ -89,7 +86,7 @@ export function PhaseController({
       </div>
       <span className="font-mono text-[0.56rem] uppercase tracking-[0.16em] text-white/25">
         {next < 0
-          ? "Polls closed · terminal"
+          ? "Close phase - terminal"
           : busy
           ? "Updating…"
           : `Hold ${PHASES[next].action} to ${PHASES[current]?.verb ?? "advance"}`}

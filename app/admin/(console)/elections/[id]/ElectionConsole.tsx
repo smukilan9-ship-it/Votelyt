@@ -89,7 +89,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
     if (res.ok) {
       const updated = await res.json();
       setElection((e) => ({ ...e, status: updated.status }));
-      toast(`Phase set to ${status === "ACTIVE" ? "open" : status === "ENDED" ? "closed" : status.toLowerCase()}`, "success");
+      toast(`Phase set to ${status === "ACTIVE" ? "open" : status === "ENDED" ? "close" : "draft"}`, "success");
     } else {
       toast("Failed to update phase", "error");
     }
@@ -670,7 +670,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
   const [clearConfirm, setClearConfirm] = useState(false);
   const { toast } = useToast();
   const isAccessCode = authMode === "ACCESS_CODE";
-  // The roll is editable only during setup; once the election opens it's frozen.
+  // The roll is editable only during draft; once the election opens it's frozen.
   const editable = status === "DRAFT";
 
   const load = async () => {
@@ -927,7 +927,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         This removes all{" "}
         <span className="font-semibold text-white">{voters.length}</span>{" "}
         voters and their access codes from this election. This cannot be undone — you would need to re-import the list.
-        The roll can only be cleared while the election is still in setup.
+        The roll can only be cleared while the election is still in draft.
       </p>
     </Modal>
 

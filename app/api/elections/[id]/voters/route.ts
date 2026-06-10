@@ -177,7 +177,7 @@ export async function POST(
 }
 
 // Clear the entire voter roll for the election. Only permitted while the
-// election is in DRAFT (setup); once it has opened, the roll is frozen.
+// election is in DRAFT; once it has opened, the roll is frozen.
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

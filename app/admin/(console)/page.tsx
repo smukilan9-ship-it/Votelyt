@@ -58,7 +58,7 @@ export default async function AdminDashboard() {
       <div className="mb-16 grid grid-cols-2 gap-4 sm:gap-5 md:mb-24 md:grid-cols-4">
         {[
           { label: "Elections", value: elections.length },
-          { label: "Live now", value: activeCount, accent: activeCount > 0 },
+          { label: "Open now", value: activeCount, accent: activeCount > 0 },
           { label: "Turnout", value: turnout, suffix: "%", ring: true },
           { label: "Ballots cast", value: totalVoted },
         ].map((card, i) => (
@@ -134,7 +134,7 @@ export default async function AdminDashboard() {
                     }`}
                   >
                     {live && <span className="h-1.5 w-1.5 rounded-full bg-[#4A9EFF] animate-pulse" />}
-                    {live ? "Live" : ended ? "Closed" : "Draft"}
+                    {live ? "Open" : ended ? "Close" : "Draft"}
                   </span>
 
                   {/* turnout ring */}
