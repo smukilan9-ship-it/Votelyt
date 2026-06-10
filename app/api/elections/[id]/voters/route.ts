@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { authorizeElection } from "@/lib/tenant";
 import { generateToken, hashToken, fingerprintToken } from "@/lib/tokens";
 import { parseSpreadsheet } from "@/lib/csv";
+import { requireSetupMutableElection, writeAuditLog } from "@/lib/electionIntegrity";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // bcrypt-per-voter on large CSV imports
@@ -37,6 +38,8 @@ export async function POST(
     include: { voterFields: true },
   });
   if (!election) return NextResponse.json({ error: "Election not found" }, { status: 404 });
+  const mutable = await requireSetupMutableElection(gate.user, election, "voters.import");
+  if (!mutable.ok) return mutable.response;
 
   const isTwoFields = election.authMode === "TWO_FIELDS";
   const authFields = election.authFields as string[];
@@ -122,6 +125,12 @@ export async function POST(
 
         results.push({ ...(token ? { token } : {}), metadata: row });
       }
+      await writeAuditLog(tx, {
+        action: "VOTERS_IMPORTED",
+        userId: gate.user.id,
+        electionId: id,
+        metadata: { count: rows.length, mode: "file", authMode: election.authMode },
+      });
     });
 
     return NextResponse.json({ imported: results.length, tokens: results }, { status: 201 });
@@ -151,8 +160,17 @@ export async function POST(
     tokenHash = await hashToken(token);
   }
 
-  const voter = await prisma.voter.create({
-    data: { electionId: id, metadata: metadata as object, tokenHash, tokenLookup: token ? fingerprintToken(token) : null },
+  const voter = await prisma.$transaction(async (tx) => {
+    const created = await tx.voter.create({
+      data: { electionId: id, metadata: metadata as object, tokenHash, tokenLookup: token ? fingerprintToken(token) : null },
+    });
+    await writeAuditLog(tx, {
+      action: "VOTERS_IMPORTED",
+      userId: gate.user.id,
+      electionId: id,
+      metadata: { count: 1, mode: "single", authMode: election.authMode, voterId: created.id },
+    });
+    return created;
   });
 
   return NextResponse.json({ voter, ...(token ? { token } : {}) }, { status: 201 });
@@ -168,12 +186,23 @@ export async function DELETE(
   const gate = await authorizeElection(id);
   if (!gate.ok) return NextResponse.json({ error: gate.status === 404 ? "Not found" : "Unauthorized" }, { status: gate.status });
 
-  const election = await prisma.election.findUnique({ where: { id }, select: { status: true } });
+  const election = await prisma.election.findUnique({
+    where: { id },
+    select: { id: true, status: true, activatedAt: true },
+  });
   if (!election) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (election.status !== "DRAFT") {
-    return NextResponse.json({ error: "The voter roll cannot be cleared after the election has opened." }, { status: 409 });
-  }
+  const mutable = await requireSetupMutableElection(gate.user, election, "voters.clear");
+  if (!mutable.ok) return mutable.response;
 
-  const { count } = await prisma.voter.deleteMany({ where: { electionId: id } });
+  const { count } = await prisma.$transaction(async (tx) => {
+    const res = await tx.voter.deleteMany({ where: { electionId: id } });
+    await writeAuditLog(tx, {
+      action: "VOTERS_REMOVED",
+      userId: gate.user.id,
+      electionId: id,
+      metadata: { count: res.count, scope: "all" },
+    });
+    return res;
+  });
   return NextResponse.json({ cleared: count });
 }

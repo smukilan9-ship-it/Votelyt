@@ -2,6 +2,8 @@ import { prisma } from "./prisma";
 import { Prisma } from "@prisma/client";
 import { generateToken, hashToken, fingerprintToken } from "./tokens";
 
+type VoterTokenDb = typeof prisma | Prisma.TransactionClient;
+
 /**
  * Generate a fresh access code for one voter and atomically replace the stored
  * `tokenHash` + `tokenLookup`. Overwriting these immediately invalidates the
@@ -15,14 +17,18 @@ import { generateToken, hashToken, fingerprintToken } from "./tokens";
  * `hasVoted` is intentionally left untouched: regenerating a code must not let
  * someone vote twice or bypass restrictions.
  */
-export async function regenerateVoterToken(electionId: string, voterId: string): Promise<string> {
+export async function regenerateVoterToken(
+  electionId: string,
+  voterId: string,
+  db: VoterTokenDb = prisma
+): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt++) {
     const token = generateToken();
     const tokenHash = await hashToken(token);
     const tokenLookup = fingerprintToken(token);
     try {
       // Scope by electionId too so a mismatched voter can't be updated.
-      const res = await prisma.voter.updateMany({
+      const res = await db.voter.updateMany({
         where: { id: voterId, electionId },
         data: { tokenHash, tokenLookup },
       });

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authorizeElection } from "@/lib/tenant";
+import { requireSetupMutableElection } from "@/lib/electionIntegrity";
 
 export async function GET(
   _req: NextRequest,
@@ -34,6 +35,13 @@ export async function PATCH(
   const { id } = await params;
   const gate = await authorizeElection(id);
   if (!gate.ok) return NextResponse.json({ error: gate.status === 404 ? "Not found" : "Unauthorized" }, { status: gate.status });
+
+  const current = await prisma.election.findUnique({
+    where: { id },
+    select: { id: true, status: true, activatedAt: true },
+  });
+  const mutable = await requireSetupMutableElection(gate.user, current, "election.configure");
+  if (!mutable.ok) return mutable.response;
 
   let body;
   try {

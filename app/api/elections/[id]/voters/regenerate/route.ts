@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authorizeElection } from "@/lib/tenant";
 import { regenerateVoterToken } from "@/lib/voterTokens";
+import { requireSetupMutableElection, writeAuditLog } from "@/lib/electionIntegrity";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // bcrypt-per-voter can run long on big rolls
@@ -21,8 +22,13 @@ export async function POST(
   const gate = await authorizeElection(id);
   if (!gate.ok) return NextResponse.json({ error: gate.status === 404 ? "Not found" : "Unauthorized" }, { status: gate.status });
 
-  const election = await prisma.election.findUnique({ where: { id }, select: { authMode: true } });
+  const election = await prisma.election.findUnique({
+    where: { id },
+    select: { id: true, authMode: true, status: true, activatedAt: true },
+  });
   if (!election) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const mutable = await requireSetupMutableElection(gate.user, election, "voter_codes.regenerate");
+  if (!mutable.ok) return mutable.response;
   if (election.authMode !== "ACCESS_CODE") {
     return NextResponse.json({ error: "This election uses two-field login, not access codes." }, { status: 400 });
   }
@@ -56,8 +62,27 @@ export async function POST(
       results.push({ voterId: voter.id, metadata: voter.metadata, token });
     }
   } catch {
+    if (results.length > 0) {
+      await writeAuditLog(prisma, {
+        action: "VOTER_CODES_REGENERATED",
+        userId: gate.user.id,
+        electionId: id,
+        metadata: { count: results.length, scope: "bulk", partial: true },
+      }).catch(() => {});
+    }
     return NextResponse.json({ error: "Regeneration failed partway. Please retry.", regenerated: results.length }, { status: 500 });
   }
+
+  await writeAuditLog(prisma, {
+    action: "VOTER_CODES_REGENERATED",
+    userId: gate.user.id,
+    electionId: id,
+    metadata: {
+      count: results.length,
+      scope: "bulk",
+      ...(voterIds ? { requestedCount: voterIds.length } : {}),
+    },
+  });
 
   return NextResponse.json({ regenerated: results.length, tokens: results });
 }

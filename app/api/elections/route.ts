@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser, ownerScope } from "@/lib/tenant";
 import { generateElectionId } from "@/lib/tokens";
 import { buildSchoolPositions, SCHOOL_VOTER_FIELDS, SCHOOL_AUTH_FIELDS } from "@/lib/templates";
+import { writeAuditLog } from "@/lib/electionIntegrity";
 
 /**
  * Allocate a fresh 6-character election id and run the create. Retries on the
@@ -58,21 +59,32 @@ export async function POST(req: NextRequest) {
 
   if (template === "SCHOOL") {
     const resolvedAuthFields = resolvedAuthMode === "TWO_FIELDS" ? SCHOOL_AUTH_FIELDS : [];
-    const election = await createElectionWithShortId((id) => prisma.election.create({
-      data: {
-        id,
-        title,
-        description,
-        template: "SCHOOL",
-        ownerId,
-        authMode: resolvedAuthMode,
-        authFields: resolvedAuthFields,
-        allowAbstain: resolvedAllowAbstain,
-        voterFields: { create: SCHOOL_VOTER_FIELDS },
-        positions: { create: buildSchoolPositions() },
-      },
-      include: { voterFields: true, positions: true },
-    }));
+    const election = await createElectionWithShortId((id) =>
+      prisma.$transaction(async (tx) => {
+        const created = await tx.election.create({
+          data: {
+            id,
+            title,
+            description,
+            template: "SCHOOL",
+            ownerId,
+            authMode: resolvedAuthMode,
+            authFields: resolvedAuthFields,
+            allowAbstain: resolvedAllowAbstain,
+            voterFields: { create: SCHOOL_VOTER_FIELDS },
+            positions: { create: buildSchoolPositions() },
+          },
+          include: { voterFields: true, positions: true },
+        });
+        await writeAuditLog(tx, {
+          action: "ELECTION_CREATED",
+          userId: ownerId,
+          electionId: created.id,
+          metadata: { template: "SCHOOL", authMode: resolvedAuthMode },
+        });
+        return created;
+      })
+    );
     return NextResponse.json(election, { status: 201 });
   }
 
@@ -82,39 +94,55 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Exactly two auth fields required for two_fields mode" }, { status: 400 });
   }
 
-  const election = await createElectionWithShortId((id) => prisma.election.create({
-    data: {
-      id,
-      title,
-      description,
-      template: "GENERIC",
-      ownerId,
-      candidateFields: resolvedCandidateFields,
-      authMode: resolvedAuthMode,
-      authFields: resolvedAuthFields,
-      allowAbstain: resolvedAllowAbstain,
-      voterFields: {
-        create: (voterFields ?? []).map((f: Record<string, unknown>, i: number) => ({
-          fieldName: f.fieldName,
-          fieldLabel: f.fieldLabel,
-          isIdentifier: f.isIdentifier ?? false,
-          isRequired: f.isRequired ?? true,
-          sortOrder: i,
-        })),
-      },
-      positions: {
-        create: (positions ?? []).map((p: Record<string, unknown>, i: number) => ({
-          title: p.title,
-          description: p.description ?? null,
-          maxWinners: p.maxWinners ?? 1,
-          maxVotes: p.maxVotes ?? 1,
-          restrictions: p.restrictions ?? {},
-          sortOrder: i,
-        })),
-      },
-    },
-    include: { voterFields: true, positions: true },
-  }));
+  const election = await createElectionWithShortId((id) =>
+    prisma.$transaction(async (tx) => {
+      const created = await tx.election.create({
+        data: {
+          id,
+          title,
+          description,
+          template: "GENERIC",
+          ownerId,
+          candidateFields: resolvedCandidateFields,
+          authMode: resolvedAuthMode,
+          authFields: resolvedAuthFields,
+          allowAbstain: resolvedAllowAbstain,
+          voterFields: {
+            create: (voterFields ?? []).map((f: Record<string, unknown>, i: number) => ({
+              fieldName: f.fieldName,
+              fieldLabel: f.fieldLabel,
+              isIdentifier: f.isIdentifier ?? false,
+              isRequired: f.isRequired ?? true,
+              sortOrder: i,
+            })),
+          },
+          positions: {
+            create: (positions ?? []).map((p: Record<string, unknown>, i: number) => ({
+              title: p.title,
+              description: p.description ?? null,
+              maxWinners: p.maxWinners ?? 1,
+              maxVotes: p.maxVotes ?? 1,
+              restrictions: p.restrictions ?? {},
+              sortOrder: i,
+            })),
+          },
+        },
+        include: { voterFields: true, positions: true },
+      });
+      await writeAuditLog(tx, {
+        action: "ELECTION_CREATED",
+        userId: ownerId,
+        electionId: created.id,
+        metadata: {
+          template: "GENERIC",
+          authMode: resolvedAuthMode,
+          positions: Array.isArray(positions) ? positions.length : 0,
+          voterFields: Array.isArray(voterFields) ? voterFields.length : 0,
+        },
+      });
+      return created;
+    })
+  );
 
   return NextResponse.json(election, { status: 201 });
 }

@@ -52,6 +52,7 @@ model Election {
   // Candidate.metadata). Shape: [{ fieldName, fieldLabel, isRequired }].
   candidateFields Json         @default("[]")
   allowAbstain Boolean         @default(true)
+  activatedAt DateTime?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
@@ -67,6 +68,21 @@ model Election {
   @@index([ownerId])
   @@index([status])
   @@map("elections")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  userId     String
+  electionId String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([userId])
+  @@index([electionId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
 
 model VoterFieldDef {

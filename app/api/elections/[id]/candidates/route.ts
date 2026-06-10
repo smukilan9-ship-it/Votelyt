@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authorizeElection } from "@/lib/tenant";
+import {
+  blockedSetupMutationResponse,
+  isSetupMutable,
+  requireSetupMutableElection,
+  writeAuditLog,
+} from "@/lib/electionIntegrity";
 
 export async function POST(
   req: NextRequest,
@@ -9,6 +15,13 @@ export async function POST(
   const { id } = await params;
   const gate = await authorizeElection(id);
   if (!gate.ok) return NextResponse.json({ error: gate.status === 404 ? "Not found" : "Unauthorized" }, { status: gate.status });
+
+  const election = await prisma.election.findUnique({
+    where: { id },
+    select: { id: true, status: true, activatedAt: true },
+  });
+  const mutable = await requireSetupMutableElection(gate.user, election, "candidate.create");
+  if (!mutable.ok) return mutable.response;
 
   try {
     const contentType = req.headers.get("content-type") ?? "";
@@ -61,15 +74,24 @@ export async function POST(
       return NextResponse.json({ error: "Invalid position for this election" }, { status: 400 });
     }
 
-    const candidate = await prisma.candidate.create({
-      data: {
+    const candidate = await prisma.$transaction(async (tx) => {
+      const created = await tx.candidate.create({
+        data: {
+          electionId: id,
+          positionId,
+          name,
+          description,
+          photoUrl,
+          metadata,
+        },
+      });
+      await writeAuditLog(tx, {
+        action: "CANDIDATE_CREATED",
+        userId: gate.user.id,
         electionId: id,
-        positionId,
-        name,
-        description,
-        photoUrl,
-        metadata,
-      },
+        metadata: { candidateId: created.id, positionId },
+      });
+      return created;
     });
 
     return NextResponse.json(candidate, { status: 201 });
@@ -92,8 +114,27 @@ export async function DELETE(
 
   if (!candidateId) return NextResponse.json({ error: "candidateId required" }, { status: 400 });
 
-  await prisma.candidate.deleteMany({
-    where: { id: candidateId, electionId },
+  const election = await prisma.election.findUnique({
+    where: { id: electionId },
+    select: { id: true, status: true, activatedAt: true },
+  });
+  if (!election) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await writeAuditLog(prisma, {
+    action: "CANDIDATE_DELETE_ATTEMPTED",
+    userId: gate.user.id,
+    electionId,
+    metadata: { candidateId, status: election.status, hasOpened: election.activatedAt !== null },
+  });
+
+  if (!isSetupMutable(election)) {
+    return blockedSetupMutationResponse(gate.user, election, "candidate.delete", { candidateId });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.candidate.deleteMany({
+      where: { id: candidateId, electionId },
+    });
   });
 
   return NextResponse.json({ ok: true });
