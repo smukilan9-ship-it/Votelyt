@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Results analytics screenshot placeholder</title>
+  <desc id="desc">Placeholder for the Votelyt results and analytics screenshot.</desc>
+  <rect width="1440" height="900" fill="#020408"/>
+  <rect x="110" y="95" width="1220" height="710" rx="28" fill="#0b1118" stroke="#223247"/>
+  <text x="720" y="285" fill="#ffffff" font-family="Arial, sans-serif" font-size="44" text-anchor="middle" font-weight="700">Results &amp; Analytics</text>
+  <text x="720" y="345" fill="#7da9d8" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">Replace with turnout chart and closed-election results screenshot</text>
+  <rect x="260" y="455" width="180" height="180" rx="16" fill="#102036" stroke="#2a5b89"/>
+  <rect x="500" y="395" width="180" height="240" rx="16" fill="#4a9eff"/>
+  <rect x="740" y="500" width="180" height="135" rx="16" fill="#102036" stroke="#2a5b89"/>
+  <path d="M990 620 C1045 555 1098 565 1158 480" fill="none" stroke="#4a9eff" stroke-width="8" stroke-linecap="round"/>
+</svg>
