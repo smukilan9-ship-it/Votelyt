@@ -154,6 +154,22 @@ Integrity protections implemented in the lifecycle:
 
 ---
 
+## Documentation
+
+The consolidated technical reference is available in [DOCUMENTATION.md](DOCUMENTATION.md).
+
+Focused engineering docs are also available under [`docs/`](docs/):
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Database](docs/DATABASE.md)
+- [Election lifecycle](docs/ELECTION_LIFECYCLE.md)
+- [Voting flow](docs/VOTING_FLOW.md)
+- [Security](docs/SECURITY.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Development](docs/DEVELOPMENT.md)
+
+---
+
 ## Getting Started
 
 ### Prerequisites
