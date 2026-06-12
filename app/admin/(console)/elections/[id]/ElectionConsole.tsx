@@ -235,7 +235,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
           <div className="min-w-0">
             <div className="mb-4 flex items-center gap-4">
               <StatusBadge status={election.status} />
-              <span className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-white/25">{election.template}</span>
+              <span className="font-sans font-medium text-[0.72rem] uppercase tracking-[0.12em] text-white/45">{election.template}</span>
             </div>
             <h1 className="font-sans font-extrabold text-white leading-[0.95] tracking-tight"
               style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}>
@@ -248,7 +248,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
           <div className="flex flex-col items-end gap-5">
             <PhaseController status={election.status} busy={statusLoading} onAdvance={changeStatus} />
             <button onClick={() => { setDeleteText(""); setDeleteConfirm(true); }}
-              className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-red-400">
+              className="font-sans font-medium text-[0.78rem] text-white/50 transition-colors hover:text-red-400">
               Delete election
             </button>
           </div>
@@ -289,7 +289,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
             {/* overview */}
             {activeTab === "overview" && (
               <div className="space-y-10">
-                <TurnoutWidget electionId={election.id} />
+                <TurnoutWidget electionId={election.id} emphasized={election.status === "ACTIVE"} />
 
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   {/* Configuration */}
@@ -299,9 +299,9 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                     <InfoRow label="Positions" value={String(election.positions.length)} />
                     <InfoRow label="Voter fields" value={String(election.voterFields.length)} />
                     <InfoRow label="Registered" value={String(election._count.voters)} />
-                    <div className="flex items-center justify-between py-3">
-                      <span className="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-white/35">Abstaining</span>
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-between py-4">
+                      <span className="font-sans text-sm text-white/40">Abstaining</span>
+                      <div className="flex items-center gap-1.5">
                         {(["Allowed", "Not allowed"] as const).map((lbl) => {
                           const val = lbl === "Allowed";
                           const active = election.allowAbstain === val;
@@ -309,10 +309,10 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                             <button
                               key={lbl}
                               onClick={() => setAbstain(val)}
-                              className={`rounded-lg px-3 py-1.5 font-mono text-[0.55rem] uppercase tracking-[0.16em] transition-all ${
+                              className={`rounded-lg px-3 py-1.5 font-sans text-[0.78rem] font-medium transition-all ${
                                 active
                                   ? "bg-[#4A9EFF]/15 text-[#4A9EFF] border border-[#4A9EFF]/25"
-                                  : "text-white/30 hover:text-white/50 border border-white/[0.04]"
+                                  : "text-white/40 hover:text-white/60 border border-white/[0.06]"
                               }`}
                             >
                               {lbl}
@@ -328,7 +328,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                     <h3 className="font-sans font-semibold text-lg text-white mb-6">Voter access</h3>
                     {/* Big Election ID */}
                     <div className="mb-4 rounded-xl bg-white/[0.04] border border-white/[0.06] px-5 py-4">
-                      <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/30 mb-2">Election ID</p>
+                      <p className="sans-label text-white/40 mb-2">Election ID</p>
                       <p className="font-mono text-[1.4rem] font-bold tracking-[0.18em] text-[#4A9EFF]">
                         {election.id}
                       </p>
@@ -336,18 +336,18 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                     <div className="flex gap-2">
                       <button
                         onClick={() => { navigator.clipboard.writeText(election.id); toast("Election ID copied", "success"); }}
-                        className="flex-1 rounded-xl bg-[#4A9EFF]/10 border border-[#4A9EFF]/20 py-2.5 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-[#4A9EFF] hover:bg-[#4A9EFF]/15 transition-colors"
+                        className="flex-1 rounded-xl bg-[#4A9EFF]/10 border border-[#4A9EFF]/20 py-2.5 font-sans text-[0.8rem] font-semibold text-[#4A9EFF] hover:bg-[#4A9EFF]/15 transition-colors"
                       >
                         Copy ID
                       </button>
                       <button
                         onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/vote/${election.id}`); toast("Link copied", "success"); }}
-                        className="flex-1 rounded-xl bg-white/[0.04] border border-white/[0.06] py-2.5 font-mono text-[0.6rem] uppercase tracking-[0.18em] text-white/40 hover:text-white/60 transition-colors"
+                        className="flex-1 rounded-xl bg-white/[0.04] border border-white/[0.06] py-2.5 font-sans text-[0.8rem] font-semibold text-white/50 hover:text-white/70 transition-colors"
                       >
                         Copy link
                       </button>
                     </div>
-                    <p className="mt-4 text-xs leading-relaxed text-white/25">
+                    <p className="mt-4 text-[0.85rem] leading-relaxed text-white/45">
                       Share the Election ID with voters. They enter it at the voting portal to authenticate and cast their ballot.
                     </p>
                   </div>
@@ -366,11 +366,11 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                         className="glass rounded-xl flex items-center justify-between gap-4 px-6 py-5 hover:bg-white/[0.04] transition-colors"
                       >
                         <div className="flex items-center gap-4">
-                          <span className="font-mono text-[0.62rem] text-white/20 shrink-0">{String(i + 1).padStart(2, "0")}</span>
+                          <span className="font-mono text-[0.72rem] tabular-nums text-white/30 shrink-0">{String(i + 1).padStart(2, "0")}</span>
                           <span className="font-sans font-semibold text-base text-white">{pos.title}</span>
                         </div>
-                        <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-white/30 shrink-0">
-                          {pos.candidates.length} cand · {pos.maxVotes > 1 ? `pick ${pos.maxVotes}` : "pick 1"}
+                        <span className="font-sans text-[0.82rem] text-white/45 shrink-0">
+                          {pos.candidates.length} candidate{pos.candidates.length === 1 ? "" : "s"} · pick {pos.maxVotes}
                           {Object.keys(pos.restrictions ?? {}).length > 0 && (
                             <span className="text-[#4A9EFF] ml-2">· restricted</span>
                           )}
@@ -390,8 +390,8 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                     <div className="mb-8 flex items-center justify-between pb-5 border-b border-white/[0.08]">
                       <div className="flex items-baseline gap-4">
                         <h3 className="font-sans font-bold text-2xl text-white">{pos.title}</h3>
-                        <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-white/30">
-                          {String(pos.candidates.length).padStart(2, "0")} · pick {pos.maxVotes} · {pos.maxWinners} {pos.maxWinners > 1 ? "winners" : "winner"}
+                        <span className="font-sans text-[0.82rem] text-white/45">
+                          {pos.candidates.length} candidate{pos.candidates.length === 1 ? "" : "s"} · pick {pos.maxVotes} · {pos.maxWinners} {pos.maxWinners > 1 ? "winners" : "winner"}
                         </span>
                       </div>
                       <button
@@ -424,12 +424,12 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                                 {c.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase()}
                               </span>
                             )}
-                            <span className="absolute left-3 top-3 font-mono text-[0.52rem] tracking-[0.16em] text-white/30">
+                            <span className="absolute left-3 top-3 font-mono text-[0.68rem] tabular-nums tracking-[0.12em] text-white/40">
                               {String(i + 1).padStart(2, "0")}
                             </span>
                             <button
                               onClick={() => handleDeleteCandidate(c.id)}
-                              className="absolute right-0 top-0 bg-black/60 backdrop-blur-sm px-2.5 py-1.5 font-mono text-[0.52rem] uppercase tracking-[0.14em] text-white/30 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100 rounded-bl-lg"
+                              className="absolute right-0 top-0 bg-black/60 backdrop-blur-sm px-2.5 py-1.5 font-sans text-[0.72rem] font-medium text-white/60 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100 rounded-bl-lg"
                             >
                               Remove
                             </button>
@@ -437,7 +437,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                           <div className="p-4">
                             <p className="font-sans font-semibold text-[0.95rem] leading-tight text-white">{c.name}</p>
                             {c.description && (
-                              <p className="mt-1 font-mono text-[0.52rem] uppercase tracking-[0.14em] text-white/30">{c.description}</p>
+                              <p className="mt-1 font-sans text-[0.8rem] leading-snug text-white/50">{c.description}</p>
                             )}
                           </div>
                         </motion.div>
@@ -451,7 +451,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                           <span className="font-mono text-2xl text-white/20 transition-colors group-hover:text-[#4A9EFF]">+</span>
                         </div>
                         <div className="p-4">
-                          <p className="font-mono text-[0.58rem] uppercase tracking-[0.18em] text-white/25 transition-colors group-hover:text-white/50">
+                          <p className="font-sans text-[0.8rem] font-medium text-white/40 transition-colors group-hover:text-white/70">
                             Add candidate
                           </p>
                         </div>
@@ -468,21 +468,24 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                 <section className="glass rounded-2xl overflow-hidden">
                   <div className="flex items-center justify-between px-5 py-5 sm:px-8 sm:py-6 border-b border-white/[0.07]">
                     <h3 className="font-sans font-semibold text-lg text-white">Import voters</h3>
-                    <span className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-white/30">CSV · XLSX</span>
+                    <span className="font-sans text-[0.78rem] font-medium text-white/40">CSV or Excel</span>
                   </div>
                   <div className="p-5 sm:p-8">
-                    <p className="mb-3 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/30">Required columns</p>
+                    <p className="sans-label mb-3 text-white/40">Required columns</p>
                     <div className="mb-6 flex flex-wrap gap-2">
                       {election.voterFields.map((f) => (
                         <span
                           key={f.id}
-                          className={`rounded-lg px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.12em] border ${
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-sans text-[0.8rem] font-medium border ${
                             f.isIdentifier
                               ? "border-[#4A9EFF]/30 text-[#4A9EFF] bg-[#4A9EFF]/5"
-                              : "border-white/[0.08] text-white/30 bg-white/[0.02]"
+                              : "border-white/[0.08] text-white/55 bg-white/[0.02]"
                           }`}
                         >
-                          {f.fieldName}{f.isIdentifier ? " · id" : f.isRequired ? " · req" : " · opt"}
+                          <span className="font-mono text-[0.78rem]">{f.fieldName}</span>
+                          <span className={f.isIdentifier ? "text-[#4A9EFF]/70" : "text-white/35"}>
+                            {f.isIdentifier ? "ID" : f.isRequired ? "Required" : "Optional"}
+                          </span>
                         </span>
                       ))}
                     </div>
@@ -499,7 +502,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                       <p className="font-sans text-[1rem] font-medium text-white/60">
                         {importFile ? importFile.name : "Drop a file, or click to browse"}
                       </p>
-                      <p className="font-mono text-[0.58rem] uppercase tracking-[0.18em] text-white/25">
+                      <p className="font-sans text-[0.82rem] text-white/40">
                         {importFile ? "Ready to import" : "CSV or Excel · columns must match above"}
                       </p>
                     </label>
@@ -516,7 +519,7 @@ export function ElectionConsole({ election: initial }: { election: Election }) {
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-5 flex items-center justify-between rounded-xl border-l-2 border-[#4A9EFF] bg-[#4A9EFF]/[0.06] px-4 py-3"
                       >
-                        <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#4A9EFF]">
+                        <p className="font-sans text-[0.85rem] font-medium text-[#4A9EFF]">
                           {tokensResult.length} imported — download tokens now (shown once)
                         </p>
                         <Button size="sm" variant="success" onClick={downloadTokens}>Download CSV</Button>
@@ -653,7 +656,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between border-b border-white/[0.05] py-4 last:border-0">
       <span className="font-sans text-sm text-white/40">{label}</span>
-      <span className="font-mono text-[0.82rem] text-white/80">{value}</span>
+      <span className="font-sans text-[0.9rem] font-medium text-white/80">{value}</span>
     </div>
   );
 }
@@ -777,17 +780,19 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
         <div className="flex items-center gap-6">
           <h3 className="font-sans font-semibold text-lg text-white">
             Voter roll
-            <span className="ml-2 font-mono text-sm text-white/30">{String(voters.length).padStart(2, "0")}</span>
+            <span className="ml-2 font-mono text-sm tabular-nums text-white/35">{voters.length}</span>
           </h3>
-          <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-[#4A9EFF]">{votedCount} voted</span>
-          <span className="font-mono text-[0.62rem] uppercase tracking-[0.14em] text-white/30">{voters.length - votedCount} pending</span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4A9EFF]/25 bg-[#4A9EFF]/[0.08] px-2.5 py-1 font-sans text-[0.78rem] font-medium text-[#4A9EFF]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#4A9EFF]" />{votedCount} voted
+          </span>
+          <span className="font-sans text-[0.82rem] text-white/45">{voters.length - votedCount} pending</span>
         </div>
         <div className="flex items-center gap-4">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="SEARCH"
-            className="field-glass w-40 !py-1.5 text-[0.7rem] uppercase tracking-[0.12em]"
+            placeholder="Search voters"
+            className="field-glass w-44 !py-1.5 text-[0.85rem]"
           />
           {isAccessCode && (
             <Button size="sm" variant="secondary" onClick={() => setBulkConfirm(true)} disabled={busy !== null || voters.length === 0}>
@@ -805,7 +810,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
 
       {!editable && (
         <div className="border-b border-white/[0.07] bg-white/[0.02] px-5 py-3 sm:px-8">
-          <p className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-white/35">
+          <p className="font-sans text-[0.82rem] text-white/45">
             The voter roll is locked — voters cannot be removed after the election has opened.
           </p>
         </div>
@@ -813,7 +818,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
 
       {isAccessCode && regeneratedCount > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[#4A9EFF]/[0.06] px-5 py-3 sm:px-8">
-          <p className="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[#4A9EFF]">
+          <p className="font-sans text-[0.85rem] font-medium text-[#4A9EFF]">
             {regeneratedCount} new code{regeneratedCount > 1 ? "s" : ""} — shown once, download to distribute
           </p>
           <Button size="sm" variant="success" onClick={downloadNewCodes}>Download CSV</Button>
@@ -823,40 +828,43 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-white/[0.07]">
               {fields.map((f) => (
-                <th key={f.fieldName} className="px-6 py-3 text-left font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">
+                <th key={f.fieldName} className="px-6 py-3.5 text-left font-sans text-[0.78rem] font-semibold text-white/55">
                   {f.fieldLabel}
                 </th>
               ))}
-              <th className="px-6 py-3 text-left font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Status</th>
-              {isAccessCode && <th className="px-6 py-3 text-right font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Access code</th>}
-              {editable && <th className="px-6 py-3 text-right font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/25">Remove</th>}
+              <th className="px-6 py-3.5 text-left font-sans text-[0.78rem] font-semibold text-white/55">Status</th>
+              {isAccessCode && <th className="px-6 py-3.5 text-right font-sans text-[0.78rem] font-semibold text-white/55">Access code</th>}
+              {editable && <th className="px-6 py-3.5 text-right font-sans text-[0.78rem] font-semibold text-white/55">Remove</th>}
             </tr>
           </thead>
           <tbody>
             {filtered.map((v) => (
               <tr key={v.id} className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors">
                 {fields.map((f) => (
-                  <td key={f.fieldName} className="px-6 py-3 font-mono text-[0.72rem] text-white/70">
+                  <td key={f.fieldName} className="px-6 py-3.5 font-sans text-[0.88rem] text-white/75">
                     {v.metadata[f.fieldName] ?? "—"}
                   </td>
                 ))}
-                <td className="px-6 py-3">
-                  <span
-                    className="font-mono text-[0.58rem] uppercase tracking-[0.18em]"
-                    style={{ color: v.hasVoted ? "#4A9EFF" : "rgba(255,255,255,0.25)" }}
-                  >
-                    {v.hasVoted ? "● Voted" : "Pending"}
-                  </span>
+                <td className="px-6 py-3.5">
+                  {v.hasVoted ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#4A9EFF]/25 bg-[#4A9EFF]/[0.08] px-2.5 py-1 font-sans text-[0.75rem] font-medium text-[#4A9EFF]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#4A9EFF]" />Voted
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-sans text-[0.75rem] font-medium text-white/45">
+                      Pending
+                    </span>
+                  )}
                 </td>
                 {isAccessCode && (
-                  <td className="px-6 py-3 text-right whitespace-nowrap">
+                  <td className="px-6 py-3.5 text-right whitespace-nowrap">
                     {newCodes[v.id] ? (
                       <button
                         onClick={() => { navigator.clipboard.writeText(newCodes[v.id]); toast("Code copied", "success"); }}
                         title="Click to copy"
-                        className="font-mono text-[0.72rem] tracking-[0.18em] text-[#4A9EFF] hover:text-[#7DC4FF]"
+                        className="font-mono text-[0.82rem] tracking-[0.16em] text-[#4A9EFF] hover:text-[#7DC4FF]"
                       >
                         {newCodes[v.id]} ⧉
                       </button>
@@ -864,7 +872,7 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
                       <button
                         onClick={() => regenerateOne(v.id)}
                         disabled={busy !== null}
-                        className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/35 hover:text-[#4A9EFF] disabled:opacity-40 transition-colors"
+                        className="font-sans text-[0.78rem] font-medium text-white/45 hover:text-[#4A9EFF] disabled:opacity-40 transition-colors"
                       >
                         {busy === v.id ? "…" : "Regenerate"}
                       </button>
@@ -872,11 +880,11 @@ function VoterList({ electionId, fields, authMode, electionTitle, status, onChan
                   </td>
                 )}
                 {editable && (
-                  <td className="px-6 py-3 text-right whitespace-nowrap">
+                  <td className="px-6 py-3.5 text-right whitespace-nowrap">
                     <button
                       onClick={() => setRemoveConfirm(v.id)}
                       disabled={busy !== null}
-                      className="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-white/55 hover:text-red-400 disabled:opacity-40 transition-colors"
+                      className="font-sans text-[0.78rem] font-medium text-white/55 hover:text-red-400 disabled:opacity-40 transition-colors"
                     >
                       {busy === v.id ? "…" : "Remove"}
                     </button>

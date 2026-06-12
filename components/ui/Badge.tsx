@@ -15,7 +15,7 @@ const tones: Record<NonNullable<BadgeProps["variant"]>, string> = {
 export function Badge({ children, variant = "default", dot = false }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.18em] ${tones[variant]}`}
+      className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-sans text-[0.75rem] font-medium ${tones[variant]}`}
     >
       {dot && (
         <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "currentColor" }} />

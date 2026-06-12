@@ -70,7 +70,7 @@ export function PhaseController({
                 />
               )}
               <span
-                className="relative font-mono text-[0.62rem] uppercase tracking-[0.18em]"
+                className="relative font-sans text-[0.74rem] font-semibold uppercase tracking-[0.1em]"
                 style={{
                   color: holding && isNext ? "#fff"
                     : isCurrent ? "#4A9EFF"
@@ -84,7 +84,7 @@ export function PhaseController({
           );
         })}
       </div>
-      <span className="font-mono text-[0.56rem] uppercase tracking-[0.16em] text-white/25">
+      <span className="font-sans text-[0.74rem] font-medium text-white/40">
         {next < 0
           ? "Close phase - terminal"
           : busy

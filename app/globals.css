@@ -130,27 +130,32 @@ body {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-feature-settings: "tnum" 1;
 }
+/* Brand eyebrow — stays DM Mono, used only on the landing page. */
 .label {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-/* keep legacy compat */
-.mono-label {
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
 }
-/* sans counterpart of .mono-label — matches the landing page's main typeface */
+/* Functional label. Migrated off DM Mono → Plus Jakarta Sans and bumped to
+   12.5px so labels, field captions and table headers stay readable. DM Mono is
+   now reserved for IDs, access codes and numeric tallies. The name is kept for
+   compatibility with existing call sites. */
+.mono-label {
+  font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* sans counterpart of .mono-label — identical now that .mono-label is sans. */
 .sans-label {
   font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }

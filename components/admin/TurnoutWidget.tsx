@@ -5,7 +5,7 @@ import { Ticker } from "@/components/admin/Ticker";
 interface Pt { t: number; v: number }
 interface TurnoutData { total: number; voted: number; pending: number; percentage: number; series: Pt[] }
 
-export function TurnoutWidget({ electionId }: { electionId: string }) {
+export function TurnoutWidget({ electionId, emphasized = false }: { electionId: string; emphasized?: boolean }) {
   const [data, setData] = useState<TurnoutData | null>(null);
 
   useEffect(() => {
@@ -52,10 +52,10 @@ export function TurnoutWidget({ electionId }: { electionId: string }) {
   }
 
   return (
-    <div className="glass rounded-2xl overflow-hidden">
+    <div className={`glass rounded-2xl overflow-hidden ${emphasized ? "ring-1 ring-[#4A9EFF]/25 shadow-[0_0_50px_-12px_rgba(74,158,255,0.35)]" : ""}`}>
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.05]">
-        <span className="mono-label text-white/50">Turnout</span>
-        <span className="flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white/25">
+        <span className="sans-label text-white/55">Turnout</span>
+        <span className="flex items-center gap-2 font-sans text-[0.75rem] font-medium text-white/40">
           <span className="h-1.5 w-1.5 rounded-full bg-[#4A9EFF] animate-pulse" />
           Live · 10s
         </span>
@@ -75,8 +75,11 @@ export function TurnoutWidget({ electionId }: { electionId: string }) {
 function Cell({ label, value, suffix = "", accent = false }: { label: string; value: number; suffix?: string; accent?: boolean }) {
   return (
     <div className="px-6 py-6">
-      <p className="mb-3 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-white/30">{label}</p>
-      <p className="font-mono text-3xl font-bold tracking-tight" style={{ color: accent ? "#4A9EFF" : "rgba(255,255,255,0.85)" }}>
+      <p className="mb-3 sans-label text-white/40">{label}</p>
+      <p
+        className={`font-sans font-extrabold tracking-tight leading-none ${accent ? "text-4xl md:text-5xl" : "text-3xl md:text-4xl"}`}
+        style={{ color: accent ? "#4A9EFF" : "rgba(255,255,255,0.9)" }}
+      >
         <Ticker value={value} suffix={suffix} />
       </p>
     </div>
@@ -88,7 +91,7 @@ function LineChart({ series }: { series: Pt[] }) {
   if (!series || series.length < 2) {
     return (
       <div className="grid h-[160px] place-items-center">
-        <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-white/20">No ballots cast yet</span>
+        <span className="font-sans text-[0.85rem] text-white/35">No ballots cast yet</span>
       </div>
     );
   }
@@ -117,9 +120,9 @@ function LineChart({ series }: { series: Pt[] }) {
         <circle cx={x(last.t)} cy={y(last.v)} r="3" fill="#4A9EFF" />
         <circle cx={x(last.t)} cy={y(last.v)} r="6" fill="rgba(74,158,255,0.25)" />
       </svg>
-      <div className="flex justify-between px-4 font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/20">
+      <div className="flex justify-between px-4 font-sans text-[0.72rem] text-white/35">
         <span>Open</span>
-        <span>Time ⟶</span>
+        <span>Time →</span>
         <span>Now</span>
       </div>
     </div>

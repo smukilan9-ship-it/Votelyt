@@ -90,6 +90,9 @@ function BuilderInner() {
     setCandFields((c) => c.map((cf, idx) => (idx === i ? { ...cf, [k]: v } : cf)));
 
   const namedFields = fields.filter((f) => f.fieldName.trim());
+  const activePositions = positions.filter((p) => p.title.trim());
+  const activeCandFields = candFields.filter((c) => c.fieldName.trim() && c.fieldLabel.trim());
+  const labelFor = (k: string) => namedFields.find((f) => f.fieldName === k)?.fieldLabel ?? k;
 
   // per-step gate so the user can't skip a broken step
   const stepValid = (s: number): true | string => {
@@ -159,7 +162,7 @@ function BuilderInner() {
   return (
     <div className="mx-auto max-w-3xl px-5 py-16 md:px-8 md:py-28">
       <motion.div initial={{ opacity: 0, filter: "blur(6px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ duration: 0.6 }}>
-        <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/35 mb-5">
+        <p className="font-sans font-medium text-[0.78rem] uppercase tracking-[0.12em] text-white/45 mb-5">
           Console · create{tpl ? ` · ${tpl.name}` : " · custom"}
         </p>
         <h1 className="mb-12 font-sans font-extrabold tracking-tight leading-[1.05] text-white" style={{ fontSize: "clamp(2.6rem, 7vw, 4.8rem)" }}>
@@ -333,38 +336,95 @@ function BuilderInner() {
             )}
 
             {STEPS[step] === "Review" && (
-              <div className="space-y-10">
-                <div>
-                  <h2 className="font-sans font-bold text-2xl text-white mb-6">Summary</h2>
-                  <div className="divide-y divide-white/[0.07]">
-                    <Row label="Title" value={title || "—"} />
-                    <Row label="Type" value={fixed ? "School (Fixed)" : tpl ? tpl.name : "Custom"} />
-                    <Row label="Login" value={authMode === "ACCESS_CODE" ? "Access code" : "Two fields"} />
-                    <Row label="Abstaining" value={allowAbstain ? "Allowed" : "Not allowed"} />
-                    {!fixed && <>
-                      <Row label="Voter fields" value={`${namedFields.length} defined`} />
-                      <Row label="Primary ID" value={primary || "—"} />
-                      <Row label="Secondary ID" value={secondary || "—"} />
-                      <Row label="Positions" value={`${positions.filter((p) => p.title.trim()).length} defined`} />
-                      <Row label="Candidate fields" value={`${candFields.filter((c) => c.fieldName.trim()).length} defined`} />
-                    </>}
+              <div className="space-y-5">
+                <p className="text-[0.95rem] leading-relaxed text-white/50">
+                  Review everything below before you create it. You can still edit candidates and voters afterwards.
+                </p>
+
+                {/* Identity */}
+                <div className="glass rounded-2xl p-6 sm:p-7">
+                  <p className="sans-label mb-3 text-white/40">Election</p>
+                  <h3 className="font-sans font-bold leading-tight tracking-tight text-white" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)" }}>
+                    {title.trim() || "Untitled election"}
+                  </h3>
+                  {description.trim() && (
+                    <p className="mt-2.5 max-w-xl text-[0.95rem] leading-relaxed text-white/55">{description.trim()}</p>
+                  )}
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <Chip>{fixed ? "School · fixed structure" : tpl ? tpl.name : "Custom structure"}</Chip>
+                    <Chip accent>{authMode === "ACCESS_CODE" ? "Access-code login" : "Two-field login"}</Chip>
+                    <Chip>{allowAbstain ? "Abstaining allowed" : "Abstaining not allowed"}</Chip>
                   </div>
                 </div>
-                {!fixed && positions.filter((p) => p.title.trim()).length > 0 && (
-                  <div>
-                    <h2 className="font-sans font-bold text-2xl text-white mb-6">Positions</h2>
-                    <div className="divide-y divide-white/[0.07]">
-                      {positions.filter((p) => p.title.trim()).map((p, i) => (
-                        <div key={i} className="flex items-center gap-5 py-4">
-                          <span className="font-mono text-[0.65rem] text-white/25 w-6">{String(i + 1).padStart(2, "0")}</span>
-                          <span className="font-sans font-medium text-[1.05rem] flex-1 text-white">{p.title}</span>
-                          {Object.keys(p.rules.filter((r) => r.field && r.value)).length > 0 && <span className="font-mono text-[0.62rem] text-[#7DC4FF]">restricted</span>}
-                          <span className="font-mono text-[0.65rem] text-white/35">{p.maxVotes}v · {p.maxWinners}w</span>
-                        </div>
+
+                {/* Voter setup */}
+                {namedFields.length > 0 && (
+                  <div className="glass rounded-2xl p-6 sm:p-7">
+                    <p className="sans-label mb-3 text-white/40">Voters</p>
+                    <p className="text-[1rem] leading-relaxed text-white/75">
+                      Identified by <span className="font-semibold text-white">{labelFor(primary) || "—"}</span>
+                      {primary && <span className="text-white/45"> (must be unique)</span>}
+                      {authMode === "TWO_FIELDS" && secondary && (
+                        <>, confirmed with <span className="font-semibold text-white">{labelFor(secondary)}</span></>
+                      )}
+                      .
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {namedFields.map((f) => (
+                        <Chip key={f.fieldName} accent={f.fieldName === primary}>{f.fieldLabel || f.fieldName}</Chip>
                       ))}
                     </div>
                   </div>
                 )}
+
+                {/* Positions */}
+                {activePositions.length > 0 && (
+                  <div className="glass rounded-2xl p-6 sm:p-7">
+                    <div className="mb-3 flex items-baseline justify-between">
+                      <p className="sans-label text-white/40">Positions</p>
+                      <span className="font-sans text-[0.85rem] font-medium text-white/35">{activePositions.length}</span>
+                    </div>
+                    <div className="divide-y divide-white/[0.07]">
+                      {activePositions.map((p, i) => {
+                        const rules = p.rules.filter((r) => r.field.trim() && r.value.trim());
+                        return (
+                          <div key={i} className="flex items-start gap-4 py-3.5 first:pt-0 last:pb-0">
+                            <span className="font-mono text-[0.8rem] tabular-nums text-white/30 w-6 shrink-0 pt-0.5">{String(i + 1).padStart(2, "0")}</span>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-sans font-semibold text-[1.05rem] leading-snug text-white">{p.title}</p>
+                              <p className="mt-0.5 text-[0.85rem] text-white/50">
+                                Each voter picks {p.maxVotes} · {p.maxWinners} winner{p.maxWinners > 1 ? "s" : ""}
+                              </p>
+                              {rules.length > 0 && (
+                                <p className="mt-1 text-[0.85rem] text-[#7DC4FF]">
+                                  Limited to {rules.map((r) => `${labelFor(key(r.field)) || r.field} = ${r.value}`).join(", ")}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Extra candidate fields */}
+                {!fixed && activeCandFields.length > 0 && (
+                  <div className="glass rounded-2xl p-6 sm:p-7">
+                    <p className="sans-label mb-3 text-white/40">Extra candidate fields</p>
+                    <div className="flex flex-wrap gap-2">
+                      {activeCandFields.map((c, i) => <Chip key={i}>{c.fieldLabel || c.fieldName}</Chip>)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Commit reassurance */}
+                <div className="flex items-start gap-3 rounded-xl border border-[#4A9EFF]/15 bg-[#4A9EFF]/[0.05] px-4 py-3.5">
+                  <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[#4A9EFF]" />
+                  <p className="text-[0.88rem] leading-relaxed text-white/60">
+                    Creates this election in <span className="text-white">Draft</span>. No access codes are issued and no one can vote until you open polls.
+                  </p>
+                </div>
               </div>
             )}
           </motion.div>
@@ -437,8 +497,14 @@ function GhostAdd({ onClick, children }: { onClick: () => void; children: React.
 function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label className="mono-label mb-2 block">{label}</label>{children}</div>;
 }
-function Row({ label, value }: { label: string; value: string }) {
-  return <div className="flex items-center justify-between py-4"><span className="font-sans text-[0.95rem] text-white/45">{label}</span><span className="font-mono text-[0.85rem] tracking-[0.05em] text-white">{value}</span></div>;
+function Chip({ children, accent }: { children: React.ReactNode; accent?: boolean }) {
+  return (
+    <span className={`rounded-full border px-3 py-1 text-[0.8rem] font-medium ${
+      accent ? "border-[#4A9EFF]/30 bg-[#4A9EFF]/[0.08] text-[#7DC4FF]" : "border-white/[0.1] bg-white/[0.03] text-white/60"
+    }`}>
+      {children}
+    </span>
+  );
 }
 function IdentifierPicker({ icon, label, hint, value, onChange, options, required, allowNone }: { icon: React.ReactNode; label: string; hint: string; value: string; onChange: (v: string) => void; options: { fieldName: string; fieldLabel: string }[]; required?: boolean; allowNone?: boolean }) {
   return (

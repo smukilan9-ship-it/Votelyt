@@ -36,7 +36,7 @@ export default async function AdminDashboard() {
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="mb-12 flex items-end justify-between anim-slide-up md:mb-20" style={{ animationDelay: "0ms" }}>
         <div>
-          <p className="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-white/55 mb-5">
+          <p className="font-sans font-medium text-[0.78rem] uppercase tracking-[0.12em] text-white/55 mb-5">
             Console · Overview
           </p>
           <h1
@@ -108,7 +108,7 @@ export default async function AdminDashboard() {
                   style={{ animationDelay: `${500 + i * 60}ms` }}
                 >
                   {/* index */}
-                  <span className="shrink-0 w-8 font-mono text-[0.62rem] text-white/20">{pad2(i + 1)}</span>
+                  <span className="shrink-0 w-8 font-mono text-[0.72rem] tabular-nums text-white/30">{pad2(i + 1)}</span>
 
                   {/* live indicator */}
                   {live && <span className="shrink-0 h-2 w-2 rounded-full bg-[#4A9EFF] animate-pulse" />}
@@ -118,14 +118,14 @@ export default async function AdminDashboard() {
                     <p className="text-[1.15rem] font-semibold text-white truncate group-hover:text-[#4A9EFF] transition-colors duration-200">
                       {el.title}
                     </p>
-                    <p className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.1em] text-white/55">
+                    <p className="mt-1.5 font-sans text-[0.82rem] text-white/55">
                       {el._count.positions} positions · {el._count.candidates} candidates · {el._count.voters} voters
                     </p>
                   </div>
 
                   {/* status chip */}
                   <span
-                    className={`hidden md:inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-[0.68rem] font-mono uppercase tracking-[0.12em] ${
+                    className={`hidden md:inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-[0.75rem] font-sans font-medium ${
                       live
                         ? "bg-[#4A9EFF]/10 text-[#4A9EFF] border border-[#4A9EFF]/20"
                         : ended
@@ -139,7 +139,7 @@ export default async function AdminDashboard() {
 
                   {/* turnout ring */}
                   <div className="hidden md:flex items-center gap-3 shrink-0">
-                    <div className="relative h-10 w-10">
+                    <div className="relative h-12 w-12">
                       <svg className="absolute inset-0 -rotate-90" viewBox="0 0 36 36">
                         <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
                         <circle
@@ -149,11 +149,11 @@ export default async function AdminDashboard() {
                           strokeLinecap="round"
                         />
                       </svg>
-                      <span className="absolute inset-0 flex items-center justify-center font-mono text-[0.48rem] text-white/65">{pct}%</span>
+                      <span className="absolute inset-0 flex items-center justify-center font-mono text-[0.68rem] tabular-nums text-white/75">{pct}%</span>
                     </div>
                   </div>
 
-                  <span className="shrink-0 font-mono text-[0.62rem] tracking-[0.1em] text-white/50 hidden md:inline">
+                  <span className="shrink-0 font-mono text-[0.75rem] tabular-nums text-white/50 hidden md:inline">
                     {new Date(el.createdAt).toLocaleDateString("en-CA")}
                   </span>
 
