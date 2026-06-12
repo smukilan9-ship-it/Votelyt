@@ -75,18 +75,6 @@ Votelyt is a self-hostable election platform for schools and organizations that 
 
 ---
 
-## Screenshots
-
-Screenshots should live in `docs/screenshots/`. The files below are placeholders so the README renders without broken image links. Replace them with production screenshots when the deployment UI is finalized.
-
-![Admin console placeholder](docs/screenshots/admin-console.svg)
-
-![Voter experience placeholder](docs/screenshots/voter-experience.svg)
-
-![Results analytics placeholder](docs/screenshots/results-analytics.svg)
-
----
-
 ## Tech Stack
 
 | Layer | Technology |
@@ -409,7 +397,6 @@ components/           Admin, voter, and shared UI components
 lib/                  Auth, tenancy, tokens, Prisma, templates, integrity helpers
 prisma/               Schema, migrations, and seed script
 scripts/              Operational scripts, including vote concurrency load test
-docs/screenshots/     README screenshot placeholders
 ```
 
 ---
@@ -440,12 +427,6 @@ When changing election behavior:
 - Do not expose token hashes, raw access codes, owner IDs, or partial results.
 - Re-check tenant scoping on every new admin API route.
 - Treat changes to vote submission, lifecycle transitions, deletion, and audit logging as high risk.
-
----
-
-## License
-
-No license file is currently present. Add a license before publishing this repository for external reuse.
 
 ---
 
