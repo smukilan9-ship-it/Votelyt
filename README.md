@@ -75,22 +75,24 @@ Votelyt is a self-hostable election platform for schools and organizations that 
 
 ---
 
-## Public Demo
+## Try the Demo
 
-Votelyt includes a dedicated public demo election for quickly testing the voter experience.
+Votelyt includes a dedicated public demo election for quickly testing the complete voter experience across multiple technology categories.
 
 | Item | Value |
 |---|---|
 | Demo Election ID | `DEMO26` |
 | Demo URL | `/vote/DEMO26` |
-| Demo codes | `DEMO01` through `DEMO100` |
+| Example codes | `DEMO01`, `DEMO02`, `DEMO100` |
+| Available codes | `DEMO01` through `DEMO100` |
 
 Quick start:
 
 1. Open `/vote/DEMO26`.
 2. Enter any unused demo code, for example `DEMO01`.
-3. Cast a vote in the Favorite Programming Language contest.
-4. Reuse another code, for example `DEMO02`, to test the flow again.
+3. Vote across all categories.
+4. Experience the complete voter flow.
+5. Reuse another code, for example `DEMO02`, to test the flow again.
 
 Demo maintenance commands:
 

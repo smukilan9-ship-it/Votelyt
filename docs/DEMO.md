@@ -14,12 +14,13 @@ The demo is data-only. It does not change authentication logic, voting logic, au
 | Status | `ACTIVE` internally, presented as Open in the UI |
 | Authentication mode | `ACCESS_CODE` |
 | Voter codes | `DEMO01` through `DEMO100` |
-| Position | Favorite Programming Language |
+| Positions | 5 technology categories |
+| Candidates | 20 logo-based candidates |
 
 Description:
 
 ```text
-Public demonstration election for testing the Votelyt voting experience.
+A public demo election showcasing the Votelyt voting experience.
 ```
 
 ## Demo Architecture
@@ -28,8 +29,8 @@ The demo is created by [`scripts/demo.mjs`](../scripts/demo.mjs). It writes norm
 
 - `User` owner: `votelyt-demo-owner`
 - `Election`: `DEMO26`
-- one `Position`
-- four `Candidate` rows
+- five `Position` rows
+- twenty `Candidate` rows
 - 100 `Voter` rows
 - no special voting routes
 - no special authentication branch
@@ -38,24 +39,44 @@ The demo election is isolated by deterministic IDs and a dedicated owner. Reset 
 
 ## Candidate Seeding
 
-The demo creates one position:
+The demo creates five positions:
 
-```text
-Favorite Programming Language
-```
+| Position | Candidates |
+|---|---|
+| Best Programming Language | Python, JavaScript, Rust, Go |
+| Best AI Model | ChatGPT, Claude, Gemini, Grok |
+| Best Hosting Platform | Vercel, Netlify, Railway, Render |
+| Best Database | PostgreSQL, MySQL, MongoDB, SQLite |
+| Best Developer Tool | VS Code, Cursor, Windsurf, Zed |
 
-Candidates:
+Candidate image sources:
 
-| Candidate | Tagline | Portrait source |
-|---|---|---|
-| Python | Readable, versatile, everywhere. | `https://randomuser.me/api/portraits/women/44.jpg` |
-| JavaScript | The language of the web. | `https://randomuser.me/api/portraits/men/32.jpg` |
-| Rust | Performance without compromise. | `https://randomuser.me/api/portraits/men/75.jpg` |
-| Go | Simple. Fast. Scalable. | `https://randomuser.me/api/portraits/women/68.jpg` |
+| Candidate | Logo source |
+|---|---|
+| Python | `https://cdn.simpleicons.org/python` |
+| JavaScript | `https://cdn.simpleicons.org/javascript` |
+| Rust | `https://cdn.simpleicons.org/rust` |
+| Go | `https://cdn.simpleicons.org/go` |
+| ChatGPT | `https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg` |
+| Claude | `https://cdn.simpleicons.org/anthropic` |
+| Gemini | `https://cdn.simpleicons.org/googlegemini` |
+| Grok | `https://commons.wikimedia.org/wiki/Special:Redirect/file/Grok-icon.svg` |
+| Vercel | `https://cdn.simpleicons.org/vercel` |
+| Netlify | `https://cdn.simpleicons.org/netlify` |
+| Railway | `https://cdn.simpleicons.org/railway` |
+| Render | `https://cdn.simpleicons.org/render` |
+| PostgreSQL | `https://cdn.simpleicons.org/postgresql` |
+| MySQL | `https://cdn.simpleicons.org/mysql` |
+| MongoDB | `https://cdn.simpleicons.org/mongodb` |
+| SQLite | `https://cdn.simpleicons.org/sqlite` |
+| VS Code | `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg` |
+| Cursor | `https://cdn.simpleicons.org/cursor` |
+| Windsurf | `https://cdn.simpleicons.org/windsurf` |
+| Zed | `https://cdn.simpleicons.org/zedindustries` |
 
-The script fetches each image and stores it as a `data:` URL in `Candidate.photoUrl`, the same storage shape used by normal candidate image uploads. If a remote image fetch fails, the script stores a generated SVG fallback so every candidate still has an image.
+The script fetches each logo and stores a composed SVG logo card as a `data:` URL in `Candidate.photoUrl`, the same database field used by normal candidate image uploads. The generated card gives every logo a consistent background, white logo panel, and candidate label so cards render cleanly in the existing voter UI.
 
-Candidate taglines are stored in `Candidate.metadata.tagline`. The voter UI currently renders `Candidate.description`, so the seeded public card description includes the tagline followed by the description.
+If a remote logo fetch fails, the script stores a generated SVG fallback so every candidate still has an image. Candidate taglines are stored in `Candidate.metadata.tagline`. The voter UI currently renders `Candidate.description`, so the seeded public card description includes the tagline followed by the description.
 
 ## Demo Voter Generation
 
@@ -135,11 +156,11 @@ After seeding:
 
 1. Open `/vote/DEMO26`.
 2. Enter `DEMO01`.
-3. Select a candidate and submit.
-4. Confirm one vote row is recorded for `DEMO26`.
+3. Select one candidate in each category and submit.
+4. Confirm five vote rows are recorded for `DEMO26`.
 5. Confirm `DEMO01` cannot vote again.
 6. Confirm `DEMO02` can still authenticate.
-7. Confirm all candidate cards render portrait images.
+7. Confirm all candidate cards render logo images.
 
 ## Operational Notes
 

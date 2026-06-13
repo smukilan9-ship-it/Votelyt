@@ -279,8 +279,8 @@ export function LandingHero() {
               <br /><span className="accent-gradient-text">voting flow.</span>
             </h2>
             <p className="max-w-2xl text-[1.05rem] leading-relaxed text-white/55">
-              The demo election is preloaded with candidates, portraits, and single-use access codes.
-              Open the ballot, enter any unused code, cast a vote, and see the voter experience end to end.
+              The demo election is preloaded with technology categories, logo-based candidates, and single-use access codes.
+              Open the ballot, enter any unused code, vote across the categories, and see the voter experience end to end.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -320,7 +320,7 @@ export function LandingHero() {
             <div className="mt-6 border-t border-white/[0.07] pt-6">
               <p className="label mb-4">Quick start</p>
               <ol className="space-y-3">
-                {["Open Demo Election", "Enter any unused demo code", "Cast a vote", "Experience the full voter flow"].map((step, index) => (
+                {["Open Demo Election", "Enter any unused demo code", "Vote across all categories", "Experience the complete voter flow"].map((step, index) => (
                   <li key={step} className="flex items-center gap-3">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#4A9EFF]/15 font-mono text-[0.68rem] text-[#7DC4FF]">
                       {String(index + 1).padStart(2, "0")}
