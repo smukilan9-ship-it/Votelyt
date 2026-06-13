@@ -8,6 +8,11 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "demo:recreate": "node scripts/demo.mjs recreate",
+    "demo:regenerate-codes": "node scripts/demo.mjs regenerate-codes",
+    "demo:reset-voters": "node scripts/demo.mjs reset-voters",
+    "demo:reset-votes": "node scripts/demo.mjs reset-votes",
+    "demo:info": "node scripts/demo.mjs info",
     "postinstall": "prisma generate"
   },
   "dependencies": {

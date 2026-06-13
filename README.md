@@ -75,6 +75,36 @@ Votelyt is a self-hostable election platform for schools and organizations that 
 
 ---
 
+## Public Demo
+
+Votelyt includes a dedicated public demo election for quickly testing the voter experience.
+
+| Item | Value |
+|---|---|
+| Demo Election ID | `DEMO26` |
+| Demo URL | `/vote/DEMO26` |
+| Demo codes | `DEMO01` through `DEMO100` |
+
+Quick start:
+
+1. Open `/vote/DEMO26`.
+2. Enter any unused demo code, for example `DEMO01`.
+3. Cast a vote in the Favorite Programming Language contest.
+4. Reuse another code, for example `DEMO02`, to test the flow again.
+
+Demo maintenance commands:
+
+```bash
+npm run demo:recreate
+npm run demo:reset-votes
+npm run demo:reset-voters
+npm run demo:regenerate-codes
+```
+
+See [docs/DEMO.md](docs/DEMO.md) for the demo architecture and reset workflow.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |

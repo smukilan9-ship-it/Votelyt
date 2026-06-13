@@ -44,6 +44,10 @@ const STATS = [
   { value: "Sealed", label: "Until close" },
 ];
 
+const DEMO_ELECTION_ID = "DEMO26";
+const DEMO_URL = `/vote/${DEMO_ELECTION_ID}`;
+const DEMO_CODES = ["DEMO01", "DEMO02", "DEMO03", "DEMO100"];
+
 export function LandingHero() {
   const router = useRouter();
   const [id, setId] = useState("");
@@ -260,7 +264,78 @@ export function LandingHero() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          SECTION 2 — WHAT IS VOTELYT (scroll reveal)
+          SECTION 2 — PUBLIC DEMO
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+      <section id="demo" className="relative border-y border-white/[0.06] bg-[#03070d] px-5 py-20 md:px-16 md:py-28 lg:px-24 overflow-hidden">
+        <div className="absolute inset-0 dot-grid opacity-25 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4A9EFF]/[0.05] via-transparent to-transparent pointer-events-none" />
+
+        <div className="relative z-10 mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-end">
+          <div>
+            <p className="label mb-6">Public demo</p>
+            <h2 className="font-sans font-bold text-white leading-[1.04] tracking-tight mb-6"
+              style={{ fontSize: "clamp(2.4rem, 5vw, 5rem)" }}>
+              Try the full
+              <br /><span className="accent-gradient-text">voting flow.</span>
+            </h2>
+            <p className="max-w-2xl text-[1.05rem] leading-relaxed text-white/55">
+              The demo election is preloaded with candidates, portraits, and single-use access codes.
+              Open the ballot, enter any unused code, cast a vote, and see the voter experience end to end.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link href={DEMO_URL}
+                className="inline-flex items-center gap-2 rounded-full bg-[#4A9EFF] px-7 py-3.5 text-[0.92rem] font-semibold text-black tracking-wide hover:bg-[#7DC4FF] transition-colors duration-200">
+                Open Demo Election ⟶
+              </Link>
+              <Link href="https://github.com/smukilan9-ship-it/Votelyt/blob/main/DOCUMENTATION.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/[0.12] px-7 py-3.5 text-[0.92rem] font-medium text-white/70 hover:border-white/30 hover:text-white transition-all duration-200">
+                Documentation
+              </Link>
+            </div>
+          </div>
+
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <DemoFact label="Election ID" value={DEMO_ELECTION_ID} />
+              <DemoFact label="Demo URL" value={DEMO_URL} />
+            </div>
+
+            <div className="mt-6 border-t border-white/[0.07] pt-6">
+              <p className="label mb-3">Available demo codes</p>
+              <div className="flex flex-wrap gap-2">
+                {DEMO_CODES.map((code) => (
+                  <span key={code} className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 font-mono text-[0.72rem] tracking-[0.16em] text-white/75">
+                    {code}
+                  </span>
+                ))}
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 font-sans text-[0.75rem] font-medium text-white/45">
+                  through DEMO100
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-white/[0.07] pt-6">
+              <p className="label mb-4">Quick start</p>
+              <ol className="space-y-3">
+                {["Open Demo Election", "Enter any unused demo code", "Cast a vote", "Experience the full voter flow"].map((step, index) => (
+                  <li key={step} className="flex items-center gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#4A9EFF]/15 font-mono text-[0.68rem] text-[#7DC4FF]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-sans text-[0.95rem] text-white/65">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          SECTION 3 — WHAT IS VOTELYT (scroll reveal)
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section ref={featuresRef} className="relative bg-[#000] py-20 px-5 md:py-32 md:px-16 lg:px-24 overflow-hidden">
         {/* subtle dot grid bg */}
@@ -308,7 +383,7 @@ export function LandingHero() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          SECTION 3 — STATS BAR
+          SECTION 4 — STATS BAR
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="relative border-y border-white/[0.06] py-16 px-5 md:py-20 md:px-16 lg:px-24 overflow-hidden">
         <div className="absolute inset-0 accent-gradient opacity-[0.03] pointer-events-none" />
@@ -326,7 +401,7 @@ export function LandingHero() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          SECTION 4 — HOW IT WORKS
+          SECTION 5 — HOW IT WORKS
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-20 px-5 md:py-32 md:px-16 lg:px-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
@@ -354,7 +429,7 @@ export function LandingHero() {
       </section>
 
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-          SECTION 5 — CTA
+          SECTION 6 — CTA
       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <section className="py-20 px-5 md:py-32 md:px-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#4A9EFF]/[0.03] to-transparent pointer-events-none" />
@@ -397,6 +472,15 @@ export function LandingHero() {
           </Link>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function DemoFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-4">
+      <p className="label mb-2 text-[0.55rem]">{label}</p>
+      <p className="font-mono text-[0.82rem] tracking-[0.16em] text-white">{value}</p>
     </div>
   );
 }

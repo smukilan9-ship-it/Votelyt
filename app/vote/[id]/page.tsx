@@ -452,7 +452,7 @@ export default function VotePage({ params }: { params: Promise<{ id: string }> }
                       value={credentials.access_code ?? ""}
                       onChange={(e) => { setCredentials({ access_code: e.target.value.toUpperCase() }); if (authStatus === "DENIED") setAuthStatus("READY"); }}
                       placeholder="······"
-                      maxLength={6}
+                      maxLength={12}
                       autoFocus
                       required
                       className="field-glass text-3xl tracking-[0.5em] text-center font-sans font-medium"
